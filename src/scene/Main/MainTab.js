@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dimensions,Image} from "react-native";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import Button from "../../components/emotionButton";
 const {width,height} = Dimensions.get('window')
 
 class MainTab extends Component{
@@ -13,6 +15,7 @@ class MainTab extends Component{
     }
     render(){
         return(
+
             <View style={{flex:1, backgroundColor: "green"}}>
                 {/* Rest of the app comes ABOVE the action button component !*/
                     <Image source={require('../../img/background.png')} style={styles.backgroundImage} />
