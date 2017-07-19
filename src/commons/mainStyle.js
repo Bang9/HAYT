@@ -64,16 +64,16 @@ const styles = StyleSheet.create({
     width: 130,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#ffde52",
+    borderColor: global.mainColor,
     backgroundColor: "#fff",
     zIndex: 1,
   },
   balloonText: {
-    color: "#ffde52",
+    color: global.mainColor,
   },
   tabBarUnderlineStyle: {
-    backgroundColor:"#ffde52",
-    height:2,
+    backgroundColor:global.mainColor,
+    height:1.5,
   },
 });
 

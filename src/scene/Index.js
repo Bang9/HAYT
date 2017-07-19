@@ -8,8 +8,8 @@ import StorageControl from "./Record/StorageControl";
 //import LoginService from "../services/LoginService";
 //const loginService = new LoginService();
 
-global.mainColor='#ffca39'
-global.backgroundColor="#ffe37415"
+global.mainColor='#ff8888'
+global.backgroundColor="#ffb56d10"
 global.userConfig = {
     uid:null,
     pushToken:null,

@@ -4,7 +4,7 @@ import {
     Text,
     View,
     TextInput,
-    TouchableOpacity,
+    TouchableNativeFeedback,
     Alert,
 } from 'react-native';
 
@@ -19,7 +19,7 @@ class Button extends Component{
 
     static defaultProps = {
         title : "Button",
-        color : "#666666",
+        color : "#bfbfbf",
         onClick : null,
     }
 
@@ -31,16 +31,30 @@ class Button extends Component{
 
     render(){
         return(
-            <TouchableOpacity
-                style={[
-                {width:300,height:50,alignItems:'center',justifyContent:'center',borderRadius:5,backgroundColor:this.props.color},
-                this.props.btnStyle]}
+            <TouchableNativeFeedback
+                delayPressIn={0}
+                background={TouchableNativeFeedback.SelectableBackground()}
                 onPress={this.props.onClick}
-            >
-                <Text style={[{fontSize:17,color:'white'},this.props.titleStyle]}>{this.props.title}</Text>
-            </TouchableOpacity>
+                >
+                <View style={[styles.buttonStyle,this.props.buttonStyle,{backgroundColor:this.props.color}]}>
+                    <Text style={[styles.fontStyle,styles.titleStyle]}>{this.props.title}</Text>
+                </View>
+            </TouchableNativeFeedback>
         )
     }
 }
 
 export default Button;
+
+const styles = StyleSheet.create({
+    buttonStyle:{
+        width:250,
+        height:40,
+        borderRadius:10,
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    fontStyle:{
+        color:'white'
+    }
+})

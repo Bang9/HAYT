@@ -6,7 +6,7 @@ import ScrollableTabView from "react-native-scrollable-tab-view";
 import ImageTabBar from "../../components/ImageTabBar";
 import MainTab from "./MainTab";
 import RecordTab from "../Record/RecordTab";
-import styles from "../../common/mainStyle";
+import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 
 class Main extends Component {
@@ -31,9 +31,8 @@ class Main extends Component {
                     tabBarActiveTextColor={global.mainColor}
                     tabBarInactiveTextColor='#bdbdbd'
                     initialPage={0}>
-
-                    <MainTab tabLabel="메인"></MainTab>
-                    <RecordTab tabLabel="더보기"></RecordTab>
+                    <MainTab tabLabel="메인"/>
+                    <RecordTab tabLabel="더보기"/>
                 </ScrollableTabView>
             </View>
         )

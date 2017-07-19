@@ -3,7 +3,7 @@ import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dim
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
-import Button from "../../components/emotionButton";
+import Button from "../../components/EmotionBar";
 const {width,height} = Dimensions.get('window')
 
 class MainTab extends Component{

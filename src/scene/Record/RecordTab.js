@@ -10,7 +10,7 @@ import {
 
 import ScrollableTabView from "react-native-scrollable-tab-view";
 import ImageTabBar from "../../components/ImageTabBar";
-import styles from "../../common/mainStyle";
+import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 
 import History from '../RecordDetail/History'

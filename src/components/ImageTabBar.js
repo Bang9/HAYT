@@ -12,7 +12,7 @@ const {
     TouchableNativeFeedback
 } = ReactNative;
 
-import Common from '../common/tabStyle';
+import Common from '../commons/tabStyle';
 
 const Button = (props) => {
     return <TouchableNativeFeedback
