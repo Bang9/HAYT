@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, Text, View, TouchableNativeFeedback, FlatList, Animated, TextInput} from "react-native";
+import {Dimensions, Text, View, TouchableNativeFeedback, FlatList, Animated, TextInput, ToastAndroid} from "react-native";
 import {Actions} from 'react-native-router-flux'
 import Modal from 'react-native-modal'
 import EmotionBar from "../../components/EmotionBar";
@@ -52,10 +52,10 @@ class Record extends Component{
         //console.log("REF",this.rowRef)
         return (
             <View style={{flex:1}}>
-                <View style={{flex:0.5}}>
-                    <Text style={{alignSelf:'center'}}>{"\n\n"}감정을 최대 세개 선택해 주세요{"\n"}</Text>
+                <View style={{flex:0.5,justifyContent:'center'}}>
+                    <Text style={{alignSelf:'center'}}>{"\n"}감정을 최대 세개 선택해 주세요{"\n"}</Text>
 
-                    <View style={{margin:10, alignSelf:'center'}}>
+                    <View style={{marginTop:10,alignSelf:'center'}}>
                         {/*<Text style={{alignSelf:'flex-end'}}>{this.timeConverter(Date.now())}</Text>*/}
                         <EmotionBar
                             emotions={["행복","설렘","즐거움","소소","평온"]}
@@ -75,7 +75,7 @@ class Record extends Component{
                     </View>
                 </View>
 
-                <View style={{flex:0.3, alignSelf:'center'}}>
+                <View style={{flex:0.35, alignSelf:'center'}}>
                     <FlatList
                         data={this.state.selectedEmotions}
                         renderItem={({ item, index }) => (
@@ -90,7 +90,7 @@ class Record extends Component{
                     />
                 </View>
 
-                <Animated.View style={[{flex:0.2, justifyContent:'center',alignItems:'center'},
+                <Animated.View style={[{flex:0.15, justifyContent:'center',alignItems:'center'},
                     {
                         width: this._animated.interpolate({
                             inputRange: [0, 1],
@@ -102,7 +102,8 @@ class Record extends Component{
 
                     <Button
                         title="다음"
-                        onClick={() => this.show_modal()}/>
+                        onClick={() => this.show_modal()}
+                    />
                 </Animated.View>
                 <CommentModal
                     modalVisible = {this.state.modalVisible}
@@ -111,6 +112,13 @@ class Record extends Component{
                 />
             </View>
         )
+    }
+
+    resetState(){
+        this.setState(this.baseState,()=>{ // record scene state reset
+            this.barRef.some((obj) => {obj.buttonReset()}); // and EmotionBar state reset
+            ToastAndroid.show('기록되었습니다.',ToastAndroid.SHORT);
+        })
     }
 
     toggle_emotion(emotion,check){
@@ -131,12 +139,6 @@ class Record extends Component{
         },check())
     }
 
-    resetState(){
-        this.setState(this.baseState,()=>{ // record scene state reset
-            this.barRef.some((obj) => {obj.buttonReset()}); // and EmotionBar state reset
-        })
-    }
-
     remove_emotion(index){
         const start = this.state.selectedEmotions.slice(0, index);
         const end = this.state.selectedEmotions.slice(index + 1);
@@ -150,6 +152,7 @@ class Record extends Component{
         emoList[index].value = value;
         this.setState({selectedEmotions:emoList})
     }
+
     send_data(letter){
         this.setState({comment:letter,modalVisible:false,},()=> {
                 let uid = 'userID';
@@ -159,18 +162,11 @@ class Record extends Component{
                     emotions : this.state.selectedEmotions,
                     comment : this.state.comment
                 }
-                API.writeData(ref,data).then(
-                    this.resetState()
-                )
+                API.writeData(ref,data)
+                    .then( this.resetState() )
+                    .catch( (err) => Alert.alert("에러발생",err.message))
             }
         )
-    }
-
-    show_modal(){
-        this.setState({modalVisible:true})
-    }
-    close_modal(){
-        this.setState({modalVisible:false})
     }
 
     show_button(){
@@ -186,6 +182,13 @@ class Record extends Component{
             duration: 300,
         }).start();
     };
+
+    show_modal(){
+        this.setState({modalVisible:true})
+    }
+    close_modal(){
+        this.setState({modalVisible:false})
+    }
 }
 
 export default Record
