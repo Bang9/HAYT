@@ -68,7 +68,6 @@ class SelectedEmotion extends Component {
                         thumbStyle={{width:25,height:15,backgroundColor:'white',elevation:3}}
                         style={{width:230}}
                         trackStyle={{height:2}}
-
                         onValueChange={(val)=>this._onChange(val)}
                         animateTransitions={true}
                         animationType={'spring'}

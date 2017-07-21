@@ -6,6 +6,7 @@ import ScrollableTabView from "react-native-scrollable-tab-view";
 import ImageTabBar from "../../components/ImageTabBar";
 import MainTab from "./MainTab";
 import RecordTab from "../Record/RecordTab";
+import Login from '../Main/Login'
 import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 
@@ -26,13 +27,14 @@ class Main extends Component {
                     //style={{flexDirection: "column"}}
                     locked={false}
                     tabBarPosition="bottom"
-                    renderTabBar={() =><View></View>}
+                    renderTabBar={() =><View/>}
                     tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
                     tabBarActiveTextColor={global.mainColor}
                     tabBarInactiveTextColor='#bdbdbd'
                     initialPage={0}>
+
                     <MainTab tabLabel="메인"/>
-                    <RecordTab tabLabel="더보기"/>
+                    <RecordTab tabLabel="기록"/>
                 </ScrollableTabView>
             </View>
         )

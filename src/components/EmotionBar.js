@@ -4,7 +4,13 @@ import {StyleSheet, Text, TouchableOpacity, View, FlatList} from "react-native";
 class EmotionBar extends Component{
     constructor(props){
         super(props);
+        this.buttonRef = []
+    }
 
+    buttonReset(){
+        for(i in ref = this.buttonRef){
+            if(ref[i]!=null) ref[i].unCheck()
+        }
     }
     render(){
         return(
@@ -16,7 +22,9 @@ class EmotionBar extends Component{
                                 key={i}
                                 emotion={emotions}
                                 color="#666666"
-                                onPress={(check)=>this.props.method(emotions,check)}/>
+                                onPress={(check)=>this.props.method(emotions,check)}
+                                ref={(refs)=>this.buttonRef[i]=refs}
+                            />
                         )
                     })
                 }
@@ -32,6 +40,10 @@ class EmotionButton extends Component{
             emotion:'',
             isChecked:false,
         }
+    }
+
+    unCheck(){
+        this.setState({isChecked:false})
     }
 
     componentWillMount(){

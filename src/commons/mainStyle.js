@@ -69,11 +69,11 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   balloonText: {
-    color: global.mainColor,
+    color: '#ff8888',
   },
   tabBarUnderlineStyle: {
-    backgroundColor:global.mainColor,
-    height:1.5,
+    backgroundColor:'#ff8888',
+    height:2,
   },
 });
 

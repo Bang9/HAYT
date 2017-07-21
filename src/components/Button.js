@@ -37,7 +37,7 @@ class Button extends Component{
                 onPress={this.props.onClick}
                 >
                 <View style={[styles.buttonStyle,this.props.buttonStyle,{backgroundColor:this.props.color}]}>
-                    <Text style={[styles.fontStyle,styles.titleStyle]}>{this.props.title}</Text>
+                    <Text style={[styles.fontStyle,this.props.titleStyle]}>{this.props.title}</Text>
                 </View>
             </TouchableNativeFeedback>
         )

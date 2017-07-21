@@ -23,7 +23,6 @@ class RecordTab extends Component{
     }
 
     render(){
-
         return(
                 <View style={{flex:1,justifyContent:'center', alignItems:'center', backgroundColor:global.backgroundColor}}>
                     <ScrollableTabView
@@ -31,15 +30,14 @@ class RecordTab extends Component{
                         locked={false}
                         tabBarPosition="top"
                         renderTabBar={() => <ImageTabBar tabStyle={{width:width*.3}} badgeNum={0} textStyle={{fontSize:12}}/>}
-                        ref={(tabView) => { this.tabView = tabView; }}
                         tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
-                        tabBarActiveTextColor={global.mainColor}
+                        tabBarActiveTextColor={'#ff8888'}
                         tabBarInactiveTextColor='#bdbdbd'
                         onChangeTab={()=>{}}
                         initialPage={0}>
 
-                        <History tabLabel="히스토리"></History>
                         <Record tabLabel="기록하기"></Record>
+                        <History tabLabel="히스토리"></History>
                         <Setting tabLabel="설정"></Setting>
                     </ScrollableTabView>
                 </View>

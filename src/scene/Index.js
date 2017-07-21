@@ -49,15 +49,14 @@ class App extends Component {
                     backAndroidHandler={()=>this.onBackHandler()} >
 
                 <Scene key="root">
-                    {/*
+
                     <Scene
                         key="login"
                         component={Login}
                         hideNavBar={true}
                         sceneStyle ={{marginTop:0}}
-                        initial={false}
-                    />*/
-                    }
+                        initial={true}
+                    />
 
                     <Scene
                         key="main"
@@ -66,7 +65,7 @@ class App extends Component {
                         hideNavBar={true}
                         renderBackButton={()=>null}
                         panHandlers={null} // this prop handling gesture
-                        initial={true}
+                        initial={false}
                     />
                 </Scene>
             </Router>
