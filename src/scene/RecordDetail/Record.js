@@ -50,7 +50,6 @@ class Record extends Component{
     render() {
         //console.log("EMOLIST", this.state.selectedEmotions)
         //console.log("REF",this.rowRef)
-        console.log(this.state)
         return (
             <View style={{flex:1}}>
                 <View style={{flex:0.5}}>

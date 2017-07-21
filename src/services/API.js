@@ -14,7 +14,7 @@ class API {
 
     async getData(ref){
         return await database.ref(ref).once('value', (snapshot)=>{
-            return snapshot.val();
+            return snapshot
         }
     )}
 
