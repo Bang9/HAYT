@@ -91,7 +91,7 @@ class Record extends Component{
                     />
                 </View>
 
-                <Animated.View style={[{flex:0.2, justifyContent:'center',alignItems:'center'},
+                <Animated.View style={[{flex:0.1, justifyContent:'center',alignItems:'center'},
                     {
                         width: this._animated.interpolate({
                             inputRange: [0, 1],
