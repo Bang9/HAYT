@@ -53,10 +53,10 @@ class Record extends Component{
         console.log(this.state)
         return (
             <View style={{flex:1}}>
-                <View style={{flex:0.5}}>
-                    <Text style={{alignSelf:'center'}}>{"\n\n"}감정을 최대 세개 선택해 주세요{"\n"}</Text>
+                <View style={{flex:0.5,justifyContent:'center'}}>
+                    <Text style={{alignSelf:'center'}}>{"\n"}감정을 최대 세개 선택해 주세요{"\n"}</Text>
 
-                    <View style={{margin:10, alignSelf:'center'}}>
+                    <View style={{marginTop:10,alignSelf:'center'}}>
                         {/*<Text style={{alignSelf:'flex-end'}}>{this.timeConverter(Date.now())}</Text>*/}
                         <EmotionBar
                             emotions={["행복","설렘","즐거움","소소","평온"]}
@@ -76,7 +76,7 @@ class Record extends Component{
                     </View>
                 </View>
 
-                <View style={{flex:0.3, alignSelf:'center'}}>
+                <View style={{flex:0.35, alignSelf:'center'}}>
                     <FlatList
                         data={this.state.selectedEmotions}
                         renderItem={({ item, index }) => (
@@ -91,7 +91,7 @@ class Record extends Component{
                     />
                 </View>
 
-                <Animated.View style={[{flex:0.2, justifyContent:'center',alignItems:'center'},
+                <Animated.View style={[{flex:0.15, justifyContent:'center',alignItems:'center'},
                     {
                         width: this._animated.interpolate({
                             inputRange: [0, 1],
@@ -163,9 +163,9 @@ class Record extends Component{
                     emotions : this.state.selectedEmotions,
                     comment : this.state.comment
                 }
-                API.writeData(ref,data).then(
-                    this.resetState()
-                )
+                API.writeData(ref,data)
+                    .then( this.resetState() )
+                    .catch( (err) => Alert.alert("에러발생",err.message))
             }
         )
     }
