@@ -61,16 +61,19 @@ class Record extends Component{
                             emotions={["행복","설렘","즐거움","소소","평온"]}
                             method={(emotion,check)=>this.toggle_emotion(emotion,check)}
                             ref={(refs)=>this.barRef[0]=refs}
+                            type="button"
                         />
                         <EmotionBar
                             emotions={["만족","지루함","무기력","허탈","초조"]}
                             method={(emotion,check)=>this.toggle_emotion(emotion,check)}
                             ref={(refs)=>this.barRef[1]=refs}
+                            type="button"
                         />
                         <EmotionBar
                             emotions={["우울","후회","화남","불쾌","짜증"]}
                             method={(emotion,check)=>this.toggle_emotion(emotion,check)}
                             ref={(refs)=>this.barRef[2]=refs}
+                            type="button"
                         />
                     </View>
                 </View>
@@ -94,7 +97,7 @@ class Record extends Component{
                     {
                         width: this._animated.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [0, 370],
+                            outputRange: [0, width],
                             extrapolate: 'timing',
                         }),
                     },
@@ -214,17 +217,17 @@ class CommentModal extends Component{
                     <Text style={{marginTop:20}}>COMMENT</Text>
                     <TextInput
                         autoFocus={true}
-                        style ={{width:270,height:150,margin:20,}}
+                        style ={{width:270,height:140,margin:20,}}
                         multiline = {true}
                         value={this.state.comment}
-                        onChangeText={(text)=>{this.setState({comment:text})}}
+                        onChangeText={(text)=>{if(text.length<=120)this.setState({comment:text})}}
                         underlineColorAndroid='#fff'
                         textAlignVertical='top' />
-
+                    <Text style={{position:'absolute',right:20,bottom:65}}>{this.state.comment.length+"/120"}</Text>
                     <TouchableNativeFeedback
-                        delayPressIn={5000}
+                        delayPressIn={0}
                         background={TouchableNativeFeedback.SelectableBackground()}
-                        onPress={()=>this.props.onClick(this.state.comment)}>
+                        onPress={()=>{this.props.onClick(this.state.comment); this.setState({comment:''})}}>
                         <View style={{backgroundColor:'#44aaff',height:50,width:500,alignItems:'center',justifyContent:'center'}}>
                             <Text style={{fontSize:16,color:'#fff'}}>확 인</Text>
                         </View>

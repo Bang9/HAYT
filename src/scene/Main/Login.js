@@ -95,13 +95,20 @@ class Login extends Component {
         )
     }
 
+    login_callback(isCancel){
+        if(isCancel)
+            return this.setState({showSpinner:false})
+        else
+            return this.setState({showSpinner:false},Actions.main())
+    }
+
     login_social(type){
         this.setState({loginType:type,showSpinner:true});
-        API.login(type, ()=>{this.setState({showSpinner:false}, Actions.main());})
-
+        API.login(type, (isCancel)=>this.login_callback(isCancel))
     }
+
     login_email(){
-        Actions.main();
+        API.login('email', ()=>this.login_callback())
     }
 }
 

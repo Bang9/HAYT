@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import {Text, TouchableOpacity, View, Dimensions, StyleSheet, Animated} from "react-native";
 const {width,height} = Dimensions.get('window')
-import RadioForm from "react-native-simple-radio-button";
 import Slider from 'react-native-slider';
 
 class SelectedEmotion extends Component {

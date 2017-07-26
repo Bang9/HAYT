@@ -1,6 +1,7 @@
 import { AsyncStorage } from 'react-native'
 import firebase from '../commons/Firebase'
 import FBSDK from 'react-native-fbsdk';
+import SplashScreen from 'react-native-splash-screen'
 const {
     AccessToken,
     LoginManager,
@@ -40,9 +41,9 @@ class API {
         switch(type){
             case'facebook' :
                 return this._fbAuth_Login(callback);
-                break;
 
             case'kakao' :
+                callback(true);
                 break;
 
             case'email' :
@@ -51,7 +52,6 @@ class API {
             default :
                 break;
         }
-        callback();
     }
 
     logout(type,callback){
@@ -75,53 +75,56 @@ class API {
     _fbAuth_Login(callback){
         LoginManager.logInWithReadPermissions(['public_profile'])
             .then( (res) => {
-                if(res.isCancelled){
-                    console.log("cancelled")
-                } else {
-                    AccessToken.getCurrentAccessToken().then(
-                        (data) => {
-                            let accessToken = data.accessToken
-                            const responseInfoCallback = (error, result) => {
-                                if (error) {
-                                    console.log(error)
-                                } else {
-                                    console.log(result)
-                                    let userConfig = {
-                                        name : result.name,
-                                        email : result.email,
-                                        birthday : result.birthday,
-                                        gender : result.gender,
-                                        pic : result.picture_small.data
-                                    }
-                                    AsyncStorage.setItem('authType','facebook')
-                                    AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
-                                    console.log("SET USER CONFIG")
-                                }
-                            }
+                    SplashScreen.hide()
+                    if(res.isCancelled){
+                        console.log("cancelled")
 
-                            const infoRequest = new GraphRequest(
-                                '/me',
-                                {
-                                    accessToken: accessToken,
-                                    parameters: {
-                                        fields: {
-                                            string: 'name,birthday,gender,email,picture.width(100).height(100).as(picture_small),picture.width(720).height(720).as(picture_large)'
+                    } else {
+                        AccessToken.getCurrentAccessToken().then(
+                            (data) => {
+                                let accessToken = data.accessToken
+                                const responseInfoCallback = (error, result) => {
+                                    if (error) {
+                                        console.log(error)
+                                    } else {
+                                        console.log(result)
+                                        let userConfig = {
+                                            name : result.name,
+                                            email : result.email,
+                                            birthday : result.birthday,
+                                            gender : result.gender,
+                                            pic : result.picture_small.data
                                         }
+                                        AsyncStorage.setItem('authType','facebook')
+                                        AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
+                                        console.log("SET USER CONFIG")
                                     }
-                                },
-                                responseInfoCallback
-                            );
-                            // Start the graph request.
-                            new GraphRequestManager()
-                                .addRequest(infoRequest)
-                                .start()
-                        }
-                    )
-                    callback();
-                }}
+                                }
+
+                                const infoRequest = new GraphRequest(
+                                    '/me',
+                                    {
+                                        accessToken: accessToken,
+                                        parameters: {
+                                            fields: {
+                                                string: 'name,birthday,gender,email,picture.width(100).height(100).as(picture_small),picture.width(720).height(720).as(picture_large)'
+                                            }
+                                        }
+                                    },
+                                    responseInfoCallback
+                                );
+                                // Start the graph request.
+                                new GraphRequestManager()
+                                    .addRequest(infoRequest)
+                                    .start()
+                            }
+                        )
+                    }
+                    callback(res.isCancelled)
+                }
             )
             .catch( (err) => {
-                console.log("error ocurred")
+                console.log("Facebook Login error",err)
             })
     }
 

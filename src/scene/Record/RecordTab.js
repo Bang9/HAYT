@@ -21,6 +21,8 @@ class RecordTab extends Component{
     constructor(props){
         super(props);
     }
+    componentDidMount(){
+    }
 
     render(){
         return(
@@ -33,7 +35,6 @@ class RecordTab extends Component{
                         tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
                         tabBarActiveTextColor={'#ff8888'}
                         tabBarInactiveTextColor='#bdbdbd'
-                        onChangeTab={()=>{}}
                         initialPage={0}>
 
                         <Record tabLabel="기록하기"></Record>

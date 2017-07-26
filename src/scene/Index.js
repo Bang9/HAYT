@@ -5,7 +5,6 @@ import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
 import Login from "./Main/Login";
 import Main from "./Main/Main";
 import API from "../services/API"
-import Spinner from "react-native-loading-spinner-overlay";
 import SplashScreen from 'react-native-splash-screen'
 import StorageControl from "./Record/StorageControl";
 
@@ -52,14 +51,13 @@ class App extends Component {
     }
 
     componentDidMount(prevProps,prevState){
-        setInterval( ()=>SplashScreen.hide(),1000);
+        setInterval(()=>SplashScreen.hide(),1500);
     }
 
     render(){
         if(this.state.onLoading){
-            return (
-                <Spinner visible={true}/>
-            )
+            SplashScreen.show()
+            return(<View/>)
         }
 
         return(

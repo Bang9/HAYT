@@ -6,8 +6,6 @@ import firebase from '../../commons/Firebase'
 const {width,height} = Dimensions.get('window');
 import EmotionBar from "../../components/EmotionBar";
 import Modal from 'react-native-modal'
-import Accordion from 'react-native-accordion';
-
 
 const timeConverter = (timeStamp)=>{
     let a = new Date(parseInt(timeStamp));
@@ -36,26 +34,39 @@ class History extends Component {
     constructor(){
         super()
         this.state={
-            modalVisible:false,
             emotionData : null,
-            removeData : null,
+            modalVisible:false,
+            selectedData : null,
             refreshing : false,
+            index : 0,
+            listData : [],
         }
-        this.data=null
+        this.initialState = this.state
     }
 
     componentWillMount(){
         this.onRefresh()
     }
 
+    handleData(){
+        let start = this.state.listData.concat()
+        let end = this.state.emotionData.slice(this.state.index,this.state.index+10)
+        this.setState({
+            listData : [
+                ...start,
+                ...end
+            ],
+            index:this.state.index + 10
+        },console.log(this.state.listData,this.state.index))
+    }
+
     render(){
         return(
             <View>
-                <Text style={{alignSelf: "center", fontSize : 20}}>Emotion History</Text>
                 {
-                    this.state.emotionData!=null &&
+                    this.state.emotionData!=null&&
                     <FlatList
-                        data = {this.state.emotionData}
+                        data = {this.state.listData}
                         renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
                             //this._renderRow(item)
                             <HistoryRow data={item} selected={(key)=>{this.show_modal(key)}}/>
@@ -63,12 +74,18 @@ class History extends Component {
                         keyExtractor={(item => item.time)}
                         refreshing={this.state.refreshing}
                         onRefresh={() => this.onRefresh()}
+                        ListEmptyComponent={ ()=>
+                            <View style={{height:height-60,alignItems: "center",justifyContent:'center'}}>
+                                <Text style={{fontSize : 20,textAlign:'center'}}>{"Add Your\nEmotion History"}</Text>
+                            </View>}
+                        onEndReached={()=>this.handleData()}
+                        onEndReachedThreshold={0.2}
                     />
                 }
-                <CommentModal
+                <PressModal
                     modalVisible = {this.state.modalVisible}
                     closeModal = {()=>this.close_modal()}
-                    onClick = {()=>this.removeData()}
+                    onClick = {()=>this.onRemove()}
                 />
             </View>
         )
@@ -87,22 +104,23 @@ class History extends Component {
                 console.log("items : ",items)
                 console.log("key : ",key)
                 items.reverse()
-                this.setState({emotionData:items,refreshing:false})
+                this.setState({emotionData:items,refreshing:false,index:0,listData:[...items.splice(0,10)]})
             })
     }
 
     show_modal(key){
-        this.setState({removeData:key})
+        this.setState({selectedData:key})
         this.setState({modalVisible:true})
     }
+
     close_modal(){
         this.setState({modalVisible:false})
     }
 
-    removeData(){
+    onRemove(){
         let uid = 'userID'
         let ref = `users/${uid}/history`
-        API.removeData(ref,this.state.removeData);
+        API.removeData(ref,this.state.selectedData);
         this.setState({modalVisible:false},()=>this.onRefresh())
     }
 
@@ -111,10 +129,8 @@ class History extends Component {
 export default History;
 
 class HistoryRow extends Component {
-
     constructor(props){
         super(props)
-
         this.state = {
             key : null,
             expanded : false,
@@ -128,9 +144,8 @@ class HistoryRow extends Component {
 
     componentWillMount() {
         this.row = this.props.data;
-
         this.data = {};
-        this.data.date = '00/00/00';
+        this.data.date = '0000/00/00';
         this.data.time = '00:00';
         this.data.emotions = null;
         this.data.comment = 'null';
@@ -145,26 +160,51 @@ class HistoryRow extends Component {
     }
 
     getRowData(){
-        let dateObj = timeConverter(this.row.time);
         this.setState({key:this.row.time}) // this is row key(ex:1500615431030)
+        let dateObj = timeConverter(this.row.time);
         this.data.date = dateObj.date;
         this.data.time = dateObj.time;
         this.data.emotions = this.row.emotions;
         this.data.comment = this.row.comment;
     }
-    emotionList(temp){
-        let emotions = []
-        for(var i =0; i<temp.length; i++){
-            emotions[i] = temp[i].emotion
-        }
+
+    renderStateBar(data){
+        // const sad=["후회","무기력","허탈","우울"]    // blue
+        // const bad=["화남","불쾌","짜증","초조"]      // gray
+        // const normal=["소소","평온","지루함"]         // yellow
+        // const good=["만족","행복","설렘","즐거움"]   // pink
+        // let emotionValue=[0,0,0,0]
+        // let backgroundColor
+        // for(i=0; i<data.length; i++) {
+        //     if (sad.includes(data[i].emotion)) {
+        //         emotionValue[0] = emotionValue[0] + data[i].value;
+        //     }
+        //     else if (bad.includes(data[i].emotion)) {
+        //         emotionValue[1] = emotionValue[1] + data[i].value;
+        //     }
+        //     else if (normal.includes(data[i].emotion)) {
+        //         emotionValue[2] = emotionValue[2] + data[i].value;
+        //     }
+        //     else {
+        //         emotionValue[3] = emotionValue[3] + data[i].value;
+        //     }
+        // }
+        // //0 sad, 1 bad, 2 normal, 3 good
+        // let max=2
+        // for(i=0;i<4;i++){
+        //     if(emotionValue[max]<emotionValue[i]) max=i
+        // }
+        // console.log(data.emotion,max)
+        // if(max==0) backgroundColor='#1199bb44';
+        // else if(max==1) backgroundColor='#77664444';
+        // else if(max==2) backgroundColor='#ffcc2944';
+        // else backgroundColor='#ff888844';
+        let backgroundColor='#ff888844'
+
         return(
-            <EmotionBar
-                emotions={emotions}
-                method={()=>{}}
-            />
+            <View style={{width:20,height:6,backgroundColor:backgroundColor}}/>
         )
     }
-
 
     toggle(){
         let start,end;
@@ -200,41 +240,42 @@ class HistoryRow extends Component {
                     onLongPress={() => this.props.selected(this.state.key)}
                 >
                     <View style={styles.midWrapper}>
-                        {this.emotionList(this.data.emotions)}
+                        <EmotionBar
+                            emotions={this.data.emotions}
+                            type="graph"
+                        />
                     </View>
 
                     <View style={styles.rightWrapper}>
-                        <View style={styles.rightItems}>
-                            <Image source={require("../../img/nav_group_on.png")}
-                                   style={{width:15,height:15}}
-                                   resizeMode={"contain"}/>
-                        </View>
-                        <Text style={styles.rightText}>{this.data.date}</Text>
-                        <Text style={styles.rightText}>{this.data.time}</Text>
+                        {this.renderStateBar(this.data.emotions)}
+                        <Text style={styles.dateText}>{this.data.date}</Text>
+                        <Text style={styles.timeText}>{this.data.time}</Text>
                     </View>
                 </TouchableOpacity>
 
                 <ScrollView style={[styles.rowExpandContainer]}>
-                    <Text style={{justifyContent:'center',alignSelf:'center'}}>{this.data.comment}</Text>
+                    <Text style={{margin:7}}>{this.data.comment}</Text>
                 </ScrollView>
             </Animated.View>
         );
     }
 }
 
-class CommentModal extends Component{
+class PressModal extends Component{
     render(){
         return(
             <Modal
                 isVisible={this.props.modalVisible}
                 onBackButtonPress={this.props.closeModal}
                 hideOnBack={true}>
-                <View style ={{borderRadius : 30,justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>
+                <View style ={{borderRadius:0,alignSelf:'center',alignItems:'center',backgroundColor:'#fff',width:width*.7}}>
+                    <View style={{justifyContent:'center',alignItems:'center',backgroundColor:'#44aaff',width:width*.7,height:40}}>
+                        <Text style={{color:'#fff'}}>메뉴</Text>
+                    </View>
                     <TouchableNativeFeedback
-                        style={{width:300}}
                         onPress ={this.props.onClick}>
-                        <View style={{width :350, alignItems : "center"}}>
-                            <Text style={{fontSize:16,}}>기록 삭제하기</Text>
+                        <View style={{justifyContent:'center',alignItems:'center',width:width*.7,height:40}}>
+                            <Text style={{fontSize:16}}>삭제</Text>
                         </View>
                     </TouchableNativeFeedback>
                 </View>
@@ -242,6 +283,7 @@ class CommentModal extends Component{
         )
     }
 }
+
 //row container height -> first shown row size
 //row expand container height -> hide view
 const ROW_CONTAINER_HEIGHT = 80;
@@ -274,24 +316,31 @@ const styles = StyleSheet.create({
     midWrapper:{
         flex:1,
         alignItems:'flex-start',
+        paddingRight:0
     },
     midText:{
         fontSize:22,
         color:'#444444',
+
     },
     rightWrapper:{
         flex:1,
         alignItems:'flex-end',
+
     },
     rightItems:{
         alignItems:'center',
     },
-    rightText:{
+    dateText:{
+        fontSize:14,
+        color:'#666666',
+    },
+    timeText:{
         fontSize:13,
-        color:'#444444',
+        color:'#8f8f8f'
     },
     rowExpandContainer:{
         height:ROW_EXPAND_CONTAINER_HEIGHT,
-        backgroundColor:'#f1f1f1',
+        backgroundColor:'#ffefef',
     },
 })
