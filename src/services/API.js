@@ -141,6 +141,11 @@ class API {
     writeData(ref,data){
         return database.ref(ref).set(data)
     }
+
+    removeData(ref,data){
+        database.ref(ref+'/'+data).remove()
+    }
+
 }
 
 export default new API();
