@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import {Dimensions, Image, StyleSheet, TextInput, View, Text} from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
 import {Actions} from 'react-native-router-flux'
-
+import API from '../../services/API'
 import Button from "../../components/Button";
 const {width,height} = Dimensions.get('window');
 
@@ -10,11 +10,15 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            method: 'none',
+            loginType: 'none',
             userId: null,
             userPwd: null,
             showSpinner: false,
         }
+    }
+
+    componentWillMount(){
+
     }
 
     render() {
@@ -24,7 +28,7 @@ class Login extends Component {
         const mainView = (
             <View style={styles.loginContainer}>
                 <Button title="이메일로 로그인" color={'#ff8888'}
-                        buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.setState({method:'email'})}}/>
+                        buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.setState({loginType:'email'})}}/>
                 <Button title="페이스북" color={'#6d84b4'}
                         buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.login_social('facebook')}}/>
                 <Button title="카카오톡" color={'#fcd411'}
@@ -73,10 +77,10 @@ class Login extends Component {
                         onClick={() =>this.login_email()}/>
                 <Button title="뒤로가기" color={'#fff'} titleStyle={{color:'#ff8888'}}
                         buttonStyle={{borderColor:'#ff8888',borderWidth:1,margin:10,width: width * .8}}
-                        onClick={() =>{this.setState({method:'none'})}}/>
+                        onClick={() =>{this.setState({loginType:'none'})}}/>
             </View>
         )
-        const renderView = this.state.method=='email' ? emailView : mainView
+        const renderView = this.state.loginType=='email' ? emailView : mainView
 
         return (
             <View style={{flex:1,alignItems: 'center'}}>
@@ -92,8 +96,9 @@ class Login extends Component {
     }
 
     login_social(type){
-        this.setState({method:type});
-        Actions.main();
+        this.setState({loginType:type,showSpinner:true});
+        API.login(type, ()=>{this.setState({showSpinner:false}, Actions.main());})
+
     }
     login_email(){
         Actions.main();

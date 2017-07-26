@@ -8,6 +8,9 @@ import {
     Dimensions
 } from 'react-native';
 
+import Button from '../../components/Button'
+import API from '../../services/API'
+import {Actions} from 'react-native-router-flux'
 class Setting extends Component{
     render(){
         return(
@@ -15,6 +18,7 @@ class Setting extends Component{
             <Text style={{fontSize:30}}>
                 SETTING PAGE
             </Text>
+            <Button title="로그아웃" onClick={()=>{API.logout('facebook',()=>{Actions.login()})}}/>
         </View>
         )
     }

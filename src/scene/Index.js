@@ -1,12 +1,13 @@
 import React, {Component} from "react";
-import {Alert, BackHandler, Image, Platform, StatusBar, StyleSheet, TouchableOpacity} from "react-native";
+import {Alert, BackHandler, Image, Platform, StatusBar, StyleSheet, TouchableOpacity, AsyncStorage ,View, Text} from "react-native";
 
 import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
 import Login from "./Main/Login";
 import Main from "./Main/Main";
+import API from "../services/API"
+import Spinner from "react-native-loading-spinner-overlay";
+import SplashScreen from 'react-native-splash-screen'
 import StorageControl from "./Record/StorageControl";
-//import LoginService from "../services/LoginService";
-//const loginService = new LoginService();
 
 global.mainColor='#ff8888'
 global.backgroundColor="#ffb56d10"
@@ -32,15 +33,35 @@ class App extends Component {
     constructor(props){
         super(props)
         this.state={
+            onLoading : true,
+            authState : false
         }
     }
 
     componentWillMount(){
-        //StatusBar.setBackgroundColor('#bdbdbd',true)
+        API.getAuth()
+            .then( (data) => {
+                if(data.result){
+                    console.log("GET AUTH:",data)
+                    this.setState({authState:true, onLoading:false})
+                } else{
+                    console.log('NO AUTH:',data)
+                    this.setState({authState:false, onLoading:false})
+                }
+            })
     }
-    componentDidMount(){
+
+    componentDidMount(prevProps,prevState){
+        setInterval( ()=>SplashScreen.hide(),1000);
     }
+
     render(){
+        if(this.state.onLoading){
+            return (
+                <Spinner visible={true}/>
+            )
+        }
+
         return(
             <Router navigationBarStyle={styles.navBar}
                     sceneStyle = {styles.scene}
@@ -55,7 +76,7 @@ class App extends Component {
                         component={Login}
                         hideNavBar={true}
                         sceneStyle ={{marginTop:0}}
-                        initial={true}
+                        initial={!this.state.authState}
                     />
 
                     <Scene
@@ -65,7 +86,7 @@ class App extends Component {
                         hideNavBar={true}
                         renderBackButton={()=>null}
                         panHandlers={null} // this prop handling gesture
-                        initial={false}
+                        initial={this.state.authState}
                     />
                 </Scene>
             </Router>
@@ -90,7 +111,7 @@ class App extends Component {
         if (this.sceneKey === "main" || this.sceneKey === "login") {
             Alert.alert(
                 '알림',
-                '택시트레인을 종료하시겠습니까?', [{
+                '앱을 종료하시겠습니까?', [{
                     text: '네',
                     onPress: () => BackHandler.exitApp()
                 },
@@ -151,3 +172,5 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+console.ignoredYellowBox = ['Setting a timer'];
