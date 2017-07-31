@@ -14,7 +14,7 @@ class EmotionBar extends Component{
         }
     }
     render(){
-        let view
+        let view = null;
         if(this.props.type=='button') {
             view = (
                 this.props.emotions.map((emotions, i) => {
@@ -77,7 +77,7 @@ class EmotionGraph extends Component{
                 size={50}
                 width={2}
                 rotation={0}
-                fill={this.props.value * 19.999}
+                fill={this.props.value * 19.99}
                 tintColor={tintColor}
                 backgroundColor={backgroundColor}>
                 {
@@ -140,7 +140,7 @@ class EmotionButton extends Component{
             <TouchableOpacity
                 style={[
                     this.state.isChecked? styles.clickedButtonStyle : styles.buttonStyle,
-                    {backgroundColor:this.state.isChecked? global.mainColor : 'white'} ]}
+                    {backgroundColor:this.state.isChecked? '#ff8888' : 'white'} ]}
                 onPress={()=>this.toggle()}
             >
                 <Text style={[{fontSize:13,color:this.state.isChecked?'white':'#777'}]}>{this.state.emotion}</Text>

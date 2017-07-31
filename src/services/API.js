@@ -71,105 +71,185 @@ class API {
         }
         callback();
     }
-
-    _fbAuth_Login(callback){
-        LoginManager.logInWithReadPermissions(['public_profile'])
-            .then( (res) => {
-                    SplashScreen.hide()
-                    if(res.isCancelled){
-                        console.log("cancelled")
-
-                    } else {
-                        AccessToken.getCurrentAccessToken().then(
-                            (data) => {
-
-                                //Regist firebase
-                                function isUserEqual(facebookAuthResponse, firebaseUser) {
-                                    if (firebaseUser) {
-                                        var providerData = firebaseUser.providerData;
-                                        for (var i = 0; i < providerData.length; i++) {
-                                            if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
-                                                providerData[i].uid === facebookAuthResponse.userID) {
-                                                // We don't need to re-auth the Firebase connection.
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                    return false;
-                                }
-
-                                var unsubscribe = firebaseAuth.onAuthStateChanged(function(firebaseUser) {
-                                    unsubscribe();
-                                    // Check if we are already signed-in Firebase with the correct user.
-                                    if (!isUserEqual(data, firebaseUser)) {
-                                        // Build Firebase credential with the Facebook auth token.
-                                        var credential = firebase.auth.FacebookAuthProvider.credential(
-                                            data.accessToken);
-                                        // Sign in with the credential from the Facebook user.
-                                        firebase.auth().signInWithCredential(credential)
-                                            .catch(function(error) {
-                                                    // Handle Errors here.
-                                                    var errorCode = error.code;
-                                                    var errorMessage = error.message;
-                                                    // The email of the user's account used.
-                                                    var email = error.email;
-                                                    // The firebase.auth.AuthCredential type that was used.
-                                                    var credential = error.credential;
-                                                    console.log("Singin with FB credential ERR:",error)
-                                                }
-                                            );
-                                    }
-                                });
-                                //...
-
-                                let accessToken = data.accessToken
-                                const responseInfoCallback = (error, result) => {
-                                    if (error) {
-                                        console.log(error)
-                                    } else {
-                                        console.log(result)
-                                        let userConfig = {
-                                            name : result.name,
-                                            email : result.email,
-                                            birthday : result.birthday,
-                                            gender : result.gender,
-                                            pic : result.picture_small.data
-                                        }
-                                        AsyncStorage.setItem('authType','facebook')
-                                        AsyncStorage.setItem('uid',firebaseAuth.currentUser.uid)
-                                        AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
-                                        console.log("SET USER CONFIG")
-                                    }
-                                }
-
-                                const infoRequest = new GraphRequest(
-                                    '/me',
-                                    {
-                                        accessToken: accessToken,
-                                        parameters: {
-                                            fields: {
-                                                string: 'name,birthday,gender,email,picture.width(100).height(100).as(picture_small),picture.width(720).height(720).as(picture_large)'
-                                            }
-                                        }
-                                    },
-                                    responseInfoCallback
-                                );
-                                // Start the graph request.
-                                new GraphRequestManager()
-                                    .addRequest(infoRequest)
-                                    .start()
-                            }
-                        )
-                        this.registUser('facebook');
-                    }
-                    callback(res.isCancelled)
+    _fbAuth_Login(callback){ // @callback param : isCancel(boolean)
+        LoginManager
+            .logInWithReadPermissions(['public_profile', 'email'])
+            .then((result) => {
+                if (result.isCancelled) {
+                    callback(result.isCancelled)
+                    return Promise.resolve('cancelled');
                 }
-            )
-            .catch( (err) => {
-                console.log("Facebook Login error",err)
+                console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
+                // get the access token
+                return AccessToken.getCurrentAccessToken();
             })
+            .then(data => {
+                let accessToken = data.accessToken
+                const responseInfoCallback = (error, result) => {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        console.log(result)
+                        let userConfig = {
+                            name : result.name,
+                            email : result.email,
+                            birthday : result.birthday,
+                            gender : result.gender,
+                            pic : result.picture_small.data
+                        }
+                        AsyncStorage.setItem('authType','facebook')
+                        AsyncStorage.setItem('uid',firebaseAuth.currentUser.uid)
+                        AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
+                        console.log("SET USER CONFIG")
+                    }
+                }
+                const infoRequest = new GraphRequest(
+                    '/me',
+                    {
+                        accessToken: accessToken,
+                        parameters: {
+                            fields: {
+                                string: 'name,birthday,gender,email,picture.width(100).height(100).as(picture_small),picture.width(720).height(720).as(picture_large)'
+                            }
+                        }
+                    },
+                    responseInfoCallback
+                );
+                // Start the graph request.
+                new GraphRequestManager()
+                    .addRequest(infoRequest)
+                    .start()
+
+                // create a new firebase credential with the token
+                const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+
+                // login with credential
+                return firebase.auth().signInWithCredential(credential);
+            })
+            .then((currentUser) => {
+                if (currentUser === 'cancelled') {
+                    console.log('Login cancelled');
+                } else {
+                    // now signed in
+                    this.registUser('facebook');
+                    callback(false);
+                    console.log(JSON.stringify(currentUser.toJSON()));
+                }
+            })
+            .catch((error) => {
+                callback(true)
+                console.log(`Login fail with error: ${error}`);
+            });
 
     }
+    // _fbAuth_Login(callback){
+    //     LoginManager.logInWithReadPermissions(['public_profile'])
+    //         .then( (res) => {
+    //                 SplashScreen.hide()
+    //                 if(res.isCancelled){
+    //                     console.log("cancelled")
+    //
+    //                 } else {
+    //                     AccessToken.getCurrentAccessToken().then(
+    //                         (data) => {
+    //                             /*
+    //                             function isUserEqual(facebookAuthResponse, firebaseUser) {
+    //                                 if (firebaseUser) {
+    //                                     var providerData = firebaseUser.providerData;
+    //                                     for (var i = 0; i < providerData.length; i++) {
+    //                                         if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
+    //                                             providerData[i].uid === facebookAuthResponse.userID) {
+    //                                             // We don't need to re-auth the Firebase connection.
+    //                                             return true;
+    //                                         }
+    //                                     }
+    //                                 }
+    //                                 return false;
+    //                             }
+    //
+    //                             var unsubscribe = firebaseAuth.onAuthStateChanged(function(firebaseUser) {
+    //                                 unsubscribe();
+    //                                 // Check if we are already signed-in Firebase with the correct user.
+    //                                 if (!isUserEqual(data, firebaseUser)) {
+    //                                     // Build Firebase credential with the Facebook auth token.
+    //                                     var credential = firebase.auth.FacebookAuthProvider.credential(
+    //                                         data.accessToken);
+    //                                     // Sign in with the credential from the Facebook user.
+    //                                     firebase.auth().signInWithCredential(credential)
+    //                                         .catch(function(error) {
+    //                                                 // Handle Errors here.
+    //                                                 var errorCode = error.code;
+    //                                                 var errorMessage = error.message;
+    //                                                 // The email of the user's account used.
+    //                                                 var email = error.email;
+    //                                                 // The firebase.auth.AuthCredential type that was used.
+    //                                                 var credential = error.credential;
+    //                                                 console.log("Singin with FB credential ERR:",error)
+    //                                             }
+    //                                         );
+    //                                 }
+    //                             });
+    //                             */
+    //                             let credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken)
+    //                             firebase.auth().signInWithCredential(credential)
+    //                                 .then(
+    //                                     () => this.registUser('facebook')
+    //                                 )
+    //                                 .catch( (err)=>{
+    //                                     var errorCode = error.code;
+    //                                     var errorMessage = error.message;
+    //                                     var email = error.email;
+    //                                     var credential = error.credential;
+    //                                     console.log("Singin with FB credential ERR:",error)
+    //                                 })
+    //
+    //                             let accessToken = data.accessToken
+    //                             const responseInfoCallback = (error, result) => {
+    //                                 if (error) {
+    //                                     console.log(error)
+    //                                 } else {
+    //                                     console.log(result)
+    //                                     let userConfig = {
+    //                                         name : result.name,
+    //                                         email : result.email,
+    //                                         birthday : result.birthday,
+    //                                         gender : result.gender,
+    //                                         pic : result.picture_small.data
+    //                                     }
+    //                                     AsyncStorage.setItem('authType','facebook')
+    //                                     AsyncStorage.setItem('uid',firebaseAuth.currentUser.uid)
+    //                                     AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
+    //                                     console.log("SET USER CONFIG")
+    //                                 }
+    //                             }
+    //
+    //                             const infoRequest = new GraphRequest(
+    //                                 '/me',
+    //                                 {
+    //                                     accessToken: accessToken,
+    //                                     parameters: {
+    //                                         fields: {
+    //                                             string: 'name,birthday,gender,email,picture.width(100).height(100).as(picture_small),picture.width(720).height(720).as(picture_large)'
+    //                                         }
+    //                                     }
+    //                                 },
+    //                                 responseInfoCallback
+    //                             );
+    //                             // Start the graph request.
+    //                             new GraphRequestManager()
+    //                                 .addRequest(infoRequest)
+    //                                 .start()
+    //                         }
+    //                     )
+    //                 }
+    //                 callback(res.isCancelled)
+    //             }
+    //         )
+    //         .catch( (err) => {
+    //             console.log("Facebook Login error",err)
+    //         })
+    //
+    // }
 
     _fbAuth_Logout(){
         LoginManager.logOut()

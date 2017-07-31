@@ -57,7 +57,7 @@ class History extends Component {
                 ...end
             ],
             index:this.state.index + 10
-        },console.log(this.state.listData,this.state.index))
+        },console.log(this.state.listData,this.state.emotionData))
     }
 
     render(){
@@ -78,8 +78,8 @@ class History extends Component {
                             <View style={{height:height-60,alignItems: "center",justifyContent:'center'}}>
                                 <Text style={{fontSize : 20,textAlign:'center'}}>{"Add Your\nEmotion History"}</Text>
                             </View>}
-                        onEndReached={()=>this.handleData()}
-                        onEndReachedThreshold={0.2}
+                         onEndReached={()=>this.handleData()}
+                         onEndReachedThreshold={0.2}
                     />
                 }
                 <PressModal
@@ -101,12 +101,12 @@ class History extends Component {
                     for( key in obj = data.val()){
                         obj[key].time = key
                         items.push(obj[key]) // recorded item push to array
+                        // console.log("items : ",obj[key])
+                        // console.log("key : ",key)
                     }
-                    console.log("items : ",items)
-                    console.log("key : ",key)
                     items.reverse()
                 }
-                this.setState({emotionData:items,refreshing:false,index:0,listData:[...items.splice(0,10)]})
+                this.setState({emotionData:[...items],refreshing:false,index:0,listData:[...items.splice(0,10)]})
             })
     }
 
@@ -125,7 +125,6 @@ class History extends Component {
         API.removeData(ref,this.state.selectedData);
         this.setState({modalVisible:false},()=>this.onRefresh())
     }
-
 }
 
 export default History;
@@ -149,7 +148,7 @@ class HistoryRow extends Component {
         this.data = {};
         this.data.date = '0000/00/00';
         this.data.time = '00:00';
-        this.data.emotions = null;
+        this.data.emotions = [{emotions:"감정",value:"1"}];
         this.data.comment = 'null';
 
         this.getRowData();
@@ -209,15 +208,8 @@ class HistoryRow extends Component {
     }
 
     toggle(){
-        let start,end;
-
-        if(!this.state.expanded) {
-            start = ROW_CONTAINER_HEIGHT;
-            end = ROW_CONTAINER_HEIGHT + ROW_EXPAND_CONTAINER_HEIGHT;
-        } else {
-            start = ROW_CONTAINER_HEIGHT + ROW_EXPAND_CONTAINER_HEIGHT;
-            end = ROW_CONTAINER_HEIGHT;
-        }
+        let start = this.state.expanded ? ROW_CONTAINER_HEIGHT + ROW_EXPAND_CONTAINER_HEIGHT :  ROW_CONTAINER_HEIGHT;
+        let end = this.state.expanded ? ROW_CONTAINER_HEIGHT : ROW_CONTAINER_HEIGHT + ROW_EXPAND_CONTAINER_HEIGHT;
 
         this.setState({
             expanded : !this.state.expanded
@@ -231,9 +223,10 @@ class HistoryRow extends Component {
             }
         ).start();
     }
+
     render(){
         return(
-            <Animated.View style={{flex:1,borderBottomWidth:1,borderBottomColor:'#efefef',
+            <Animated.View style={{flex:1,borderBottomWidth:1,borderBottomColor:'#efefef',overflow:'hidden',
                 height:this.state.animation}}>
 
                 <TouchableOpacity

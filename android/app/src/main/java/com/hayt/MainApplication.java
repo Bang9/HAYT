@@ -13,6 +13,20 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 
+// Required package
+import io.invertase.firebase.RNFirebasePackage; // <-- Add this line
+// Optional packages - add as appropriate
+import io.invertase.firebase.auth.RNFirebaseAuthPackage; // Firebase Auth
+import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
+import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Messaging
+//import io.invertase.firebase.admob.RNFirebaseAdMobPackage; //Firebase AdMob
+//import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage; // Firebase Analytics
+//import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase Remote Config
+//import io.invertase.firebase.crash.RNFirebaseCrashPackage; // Firebase Crash Reporting
+//import io.invertase.firebase.messaging.RNFirebaseMessagingPackage; // Firebase Cloud Messaging
+//import io.invertase.firebase.storage.RNFirebaseStoragePackage; // Firebase Storage
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +49,11 @@ public class MainApplication extends Application implements ReactApplication {
                     new MainReactPackage(),
                     new SplashScreenReactPackage(),
                     new FBSDKPackage(mCallbackManager),
-                    new VectorIconsPackage()
+                    new VectorIconsPackage(),
+                    new RNFirebasePackage(),  // <-- Add this line
+                    new RNFirebaseAuthPackage(),
+                    new RNFirebaseDatabasePackage(),
+                    new RNFirebaseMessagingPackage()
             );
         }
     };
