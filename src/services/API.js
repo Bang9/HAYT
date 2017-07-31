@@ -82,6 +82,46 @@ class API {
                     } else {
                         AccessToken.getCurrentAccessToken().then(
                             (data) => {
+
+                                //Regist firebase
+                                function isUserEqual(facebookAuthResponse, firebaseUser) {
+                                    if (firebaseUser) {
+                                        var providerData = firebaseUser.providerData;
+                                        for (var i = 0; i < providerData.length; i++) {
+                                            if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
+                                                providerData[i].uid === facebookAuthResponse.userID) {
+                                                // We don't need to re-auth the Firebase connection.
+                                                return true;
+                                            }
+                                        }
+                                    }
+                                    return false;
+                                }
+
+                                var unsubscribe = firebaseAuth.onAuthStateChanged(function(firebaseUser) {
+                                    unsubscribe();
+                                    // Check if we are already signed-in Firebase with the correct user.
+                                    if (!isUserEqual(data, firebaseUser)) {
+                                        // Build Firebase credential with the Facebook auth token.
+                                        var credential = firebase.auth.FacebookAuthProvider.credential(
+                                            data.accessToken);
+                                        // Sign in with the credential from the Facebook user.
+                                        firebase.auth().signInWithCredential(credential)
+                                            .catch(function(error) {
+                                                    // Handle Errors here.
+                                                    var errorCode = error.code;
+                                                    var errorMessage = error.message;
+                                                    // The email of the user's account used.
+                                                    var email = error.email;
+                                                    // The firebase.auth.AuthCredential type that was used.
+                                                    var credential = error.credential;
+                                                    console.log("Singin with FB credential ERR:",error)
+                                                }
+                                            );
+                                    }
+                                });
+                                //...
+
                                 let accessToken = data.accessToken
                                 const responseInfoCallback = (error, result) => {
                                     if (error) {
@@ -96,6 +136,7 @@ class API {
                                             pic : result.picture_small.data
                                         }
                                         AsyncStorage.setItem('authType','facebook')
+                                        AsyncStorage.setItem('uid',firebaseAuth.currentUser.uid)
                                         AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
                                         console.log("SET USER CONFIG")
                                     }
@@ -119,6 +160,7 @@ class API {
                                     .start()
                             }
                         )
+                        this.registUser('facebook');
                     }
                     callback(res.isCancelled)
                 }
@@ -126,20 +168,25 @@ class API {
             .catch( (err) => {
                 console.log("Facebook Login error",err)
             })
+
     }
 
     _fbAuth_Logout(){
         LoginManager.logOut()
         AsyncStorage.removeItem('authType')
+        AsyncStorage.removeItem('uid')
         AsyncStorage.removeItem('userConfig')
+    }
+    get_uid(){
+        return firebaseAuth.currentUser.uid
     }
 
     //************ Database API
     async getData(ref){
         return await database.ref(ref).once('value', (snapshot)=>{
-                return snapshot
-            }
-        )}
+            return snapshot
+        })
+    }
 
     writeData(ref,data){
         return database.ref(ref).set(data)
@@ -147,6 +194,15 @@ class API {
 
     removeData(ref,data){
         database.ref(ref+'/'+data).remove()
+    }
+
+    registUser(authType){
+        let uid = firebaseAuth.currentUser.uid
+        if(uid){
+            database.ref('users/'+uid).update({
+                authType:authType
+            })
+        }
     }
 
 }

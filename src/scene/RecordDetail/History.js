@@ -92,18 +92,20 @@ class History extends Component {
     }
     onRefresh(){
         this.setState({refreshing:true})
-        let uid = 'userID'
+        let uid = API.get_uid();
         let ref = `users/${uid}/history`
         API.getData(ref)
             .then( (data) => {
                 let items = []
-                for( key in obj = data.val()){
-                    obj[key].time = key
-                    items.push(obj[key]) // recorded item push to array
+                if(data.val()){
+                    for( key in obj = data.val()){
+                        obj[key].time = key
+                        items.push(obj[key]) // recorded item push to array
+                    }
+                    console.log("items : ",items)
+                    console.log("key : ",key)
+                    items.reverse()
                 }
-                console.log("items : ",items)
-                console.log("key : ",key)
-                items.reverse()
                 this.setState({emotionData:items,refreshing:false,index:0,listData:[...items.splice(0,10)]})
             })
     }
@@ -118,7 +120,7 @@ class History extends Component {
     }
 
     onRemove(){
-        let uid = 'userID'
+        let uid = API.get_uid();
         let ref = `users/${uid}/history`
         API.removeData(ref,this.state.selectedData);
         this.setState({modalVisible:false},()=>this.onRefresh())
