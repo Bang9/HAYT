@@ -18,8 +18,8 @@ import io.invertase.firebase.RNFirebasePackage; // <-- Add this line
 // Optional packages - add as appropriate
 import io.invertase.firebase.auth.RNFirebaseAuthPackage; // Firebase Auth
 import io.invertase.firebase.database.RNFirebaseDatabasePackage; // Firebase Realtime Database
-import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
-import io.invertase.firebase.perf.RNFirebasePerformancePackage; // Firebase Messaging
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;// Firebase Messaging
+//import io.invertase.firebase.perf.RNFirebasePerformancePackage; //Firebase Performance
 //import io.invertase.firebase.admob.RNFirebaseAdMobPackage; //Firebase AdMob
 //import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage; // Firebase Analytics
 //import io.invertase.firebase.config.RNFirebaseRemoteConfigPackage; // Firebase Remote Config

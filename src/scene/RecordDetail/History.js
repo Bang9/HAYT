@@ -104,9 +104,8 @@ class History extends Component {
                         // console.log("items : ",obj[key])
                         // console.log("key : ",key)
                     }
-                    items.reverse()
                 }
-                this.setState({emotionData:[...items],refreshing:false,index:0,listData:[...items.splice(0,10)]})
+                this.setState({emotionData:items,refreshing:false,index:0,listData:[...items.splice(0,10)]})
             })
     }
 
@@ -216,17 +215,18 @@ class HistoryRow extends Component {
         });
 
         this.state.animation.setValue(start);// init val to final val
-        Animated.spring(
+        Animated.timing(
             this.state.animation,
             {
-                toValue: end
+                toValue: end,
+                duration:0,
             }
         ).start();
     }
 
     render(){
         return(
-            <Animated.View style={{flex:1,borderBottomWidth:1,borderBottomColor:'#efefef',overflow:'hidden',
+            <Animated.View style={{flex:1,borderBottomWidth:1,borderBottomColor:'#efefef',
                 height:this.state.animation}}>
 
                 <TouchableOpacity

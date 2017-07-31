@@ -77,7 +77,7 @@ class API {
             .then((result) => {
                 if (result.isCancelled) {
                     callback(result.isCancelled)
-                    return Promise.resolve('cancelled');
+                    //return Promise.resolve('cancelled');
                 }
                 console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
                 // get the access token
