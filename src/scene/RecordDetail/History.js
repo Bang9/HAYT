@@ -48,6 +48,26 @@ class History extends Component {
         this.onRefresh()
     }
 
+    //!FIXME _[DONE] :: when using for ... in, order unpredictable
+    onRefresh(){
+        this.setState({refreshing:true})
+        let uid = API.get_uid();
+        let ref = `users/${uid}/history`
+        API.getDataOnce(ref)
+            .then( (data) => {
+                let items = []
+                if(data.val()){
+                    const obj = data.val()
+                    const keys = Object.keys(obj).sort().reverse()
+                    for(let i = 0, item; item = obj[keys[i]]; i++){
+                        item.time =  keys[i];
+                        items.push(item)
+                    }
+                }
+                this.setState({emotionData:items,refreshing:false,index:0,listData:[...items.splice(0,10)]})
+            })
+    }
+
     handleData(){
         let start = this.state.listData.concat()
         let end = this.state.emotionData.slice(this.state.index,this.state.index+10)
@@ -57,7 +77,7 @@ class History extends Component {
                 ...end
             ],
             index:this.state.index + 10
-        },console.log(this.state.listData,this.state.emotionData))
+        })
     }
 
     render(){
@@ -89,24 +109,6 @@ class History extends Component {
                 />
             </View>
         )
-    }
-    onRefresh(){
-        this.setState({refreshing:true})
-        let uid = API.get_uid();
-        let ref = `users/${uid}/history`
-        API.getData(ref)
-            .then( (data) => {
-                let items = []
-                if(data.val()){
-                    for( key in obj = data.val()){
-                        obj[key].time = key
-                        items.push(obj[key]) // recorded item push to array
-                        // console.log("items : ",obj[key])
-                        // console.log("key : ",key)
-                    }
-                }
-                this.setState({emotionData:items,refreshing:false,index:0,listData:[...items.splice(0,10)]})
-            })
     }
 
     show_modal(key){

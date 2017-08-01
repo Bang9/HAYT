@@ -166,10 +166,18 @@ class API {
     }
 
     //************ Database API
-    async getData(ref){
-        return await firebase.database().ref(ref).once('value', (snapshot)=>{
+    async getDataOnce(ref){
+        return await firebase.database().ref(ref).orderByKey().once('value', (snapshot)=>{
             return snapshot
         })
+    }
+
+    async getDataOn(ref,callback){
+        return await firebase.database().ref(ref).on('value', (snapshot)=>callback(snapshot))
+    }
+
+    getDataOff(ref,callback){
+        return firebase.database().ref(ref).off('value',(snapshot)=>callback(snapshot));
     }
 
     writeData(ref,data){

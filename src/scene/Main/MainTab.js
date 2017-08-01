@@ -4,6 +4,7 @@ import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress'
 import API from '../../services/API'
+import firebase from'../../commons/Firebase'
 const {width,height} = Dimensions.get('window')
 
 class MainTab extends Component{
@@ -13,18 +14,19 @@ class MainTab extends Component{
             newMessage:null,
             currentHistory:[{emotions:[{emotion:'',value:0},{emotion:'',value:0},{emotion:'',value:0}]}]
         }
+        this.uid = firebase.auth().currentUser.uid//API.get_uid;
+        this.ref = `users/${this.uid}/currentHistory`
     }
     componentWillMount(){
-        this.getCurrentHIstory();
+        API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
     }
-    getCurrentHIstory(){
-        let uid = API.get_uid()
-        let ref = `users/${uid}/currentHistory`
-        let emotionRef = null
-        API.getData(ref)
-            .then( (snapshot)=>{
-                this.setState({currentHistory:snapshot.val()})
-            })
+    // getCurrentHIstory(){
+    //     // let uid = API.get_uid()
+    //     // let ref = `users/${uid}/currentHistory`
+    //     API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
+    // }
+    componentWillUnmount(){
+        API.removeDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
     }
     render(){
         return(
