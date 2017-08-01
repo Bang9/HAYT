@@ -19,14 +19,9 @@ class Setting extends Component{
         this.state={
             userConfig: {
                 name: null,
-                gender: null,
-                birthday: null,
                 email: null,
-                pic: {
-                    height: null,
-                    width: null,
-                    url: null
-                }
+                photoURL: null,
+                uid: null,
             },
             authType:null,
         }
@@ -47,12 +42,11 @@ class Setting extends Component{
                 <View style={{margin:20}}>
                     <Text>{"Login with "+this.state.authType}</Text>
                     <Text>{this.state.userConfig.name}</Text>
-                    <Text>{this.state.userConfig.gender}</Text>
-                    <Text>{this.state.userConfig.birthday}</Text>
                     <Text>{this.state.userConfig.email}</Text>
+                    <Text>{this.state.userConfig.uid}</Text>
                     <Image
-                        style={{width:this.state.userConfig.pic.width,height:this.state.userConfig.pic.height}}
-                        source={{uri:this.state.userConfig.pic.url}}
+                        style={{width:100,height:100}}
+                        source={{uri:this.state.userConfig.photoURL}}
                     />
                 </View>
                 <Button title="로그아웃" onClick={()=>{API.logout('facebook',()=>{Actions.login()})}}/>

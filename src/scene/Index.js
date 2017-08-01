@@ -4,6 +4,7 @@ import {Alert, BackHandler, Image, Platform, StatusBar, StyleSheet, TouchableOpa
 import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
 import Login from "./Main/Login";
 import Main from "./Main/Main";
+import SignUp from "./Main/SignUp"
 import API from "../services/API"
 import SplashScreen from 'react-native-splash-screen'
 import StorageControl from "./Record/StorageControl";
@@ -68,7 +69,6 @@ class App extends Component {
                     backAndroidHandler={()=>this.onBackHandler()} >
 
                 <Scene key="root">
-
                     <Scene
                         key="login"
                         component={Login}
@@ -85,6 +85,14 @@ class App extends Component {
                         renderBackButton={()=>null}
                         panHandlers={null} // this prop handling gesture
                         initial={this.state.authState}
+                    />
+
+                    <Scene
+                        key="signup"
+                        component={SignUp}
+                        hideNavBar={false}
+                        title="회원가입"
+                        renderBackButton={()=>this.backButton()}
                     />
                 </Scene>
             </Router>

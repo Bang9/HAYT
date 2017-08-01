@@ -107,8 +107,8 @@ export default class Session {
     }
 
     async login(param) {
-        console.log("FIREBASE::LOGIN START",param.state.userId,param.state.userPwd)
-        let data = {id:param.state.userId, pwd:param.state.userPwd}
+        console.log("FIREBASE::LOGIN START",param.state.email,param.state.password)
+        let data = {id:param.state.email, pwd:param.state.password}
 
         if(data.id==null) Alert.alert("알림","아이디를 입력하세요")
         else if(data.pwd==null) Alert.alert("알림","비밀번호를 입력하세요")
@@ -156,8 +156,8 @@ export default class Session {
 
             let userData = await this.loadAutoLoginInfo()
             param.setState({
-                userId : userData.id,
-                userPwd : userData.pwd,
+                email : userData.id,
+                password : userData.pwd,
                 autoLogin : true
             })
             await this.login(param)

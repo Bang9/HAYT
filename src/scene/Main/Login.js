@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, Image, StyleSheet, TextInput, View, Text} from "react-native";
+import {Dimensions, Image, StyleSheet, TextInput, View, Text, Alert, ScrollView} from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
 import {Actions} from 'react-native-router-flux'
 import API from '../../services/API'
@@ -11,14 +11,17 @@ class Login extends Component {
         super(props);
         this.state = {
             loginType: 'none',
-            userId: null,
-            userPwd: null,
+            email: null,
+            password: null,
             showSpinner: false,
         }
     }
 
-    componentWillMount(){
-
+    onSubmitEmail() {
+        this.password.focus();
+    }
+    onSubmitPassword() {
+        this.password.blur();
     }
 
     render() {
@@ -26,7 +29,7 @@ class Login extends Component {
         const iconPWD = require('../../img/inputPwd.png');
 
         const mainView = (
-            <View style={styles.loginContainer}>
+            <View style={[styles.loginContainer,{marginTop:80}]}>
                 <Button title="이메일로 로그인" color={'#ff8888'}
                         buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.setState({loginType:'email'})}}/>
                 <Button title="페이스북" color={'#6d84b4'}
@@ -44,11 +47,13 @@ class Login extends Component {
                         resizeMode={Image.resizeMode.contain}
                         style={styles.iconStyle}/>
                     <TextInput
+                        ref={(ref)=>this.email = ref}
                         underlineColorAndroid={"#ffffffff"}
                         placeholder="Email"
                         style={styles.inputContainer}
-                        onChangeText={(val) => this.setState({userId: val})}
-                        value={this.state.userId}/>
+                        onChangeText={(val) => this.setState({email: val})}
+                        onSubmitEditing={()=>this.onSubmitEmail()}
+                        value={this.state.email}/>
                 </View>
 
                 <View style={styles.inputBox}>
@@ -57,19 +62,21 @@ class Login extends Component {
                         resizeMode={Image.resizeMode.contain}
                         style={styles.iconStyle}/>
                     <TextInput
+                        ref={(ref)=>this.password = ref}
                         underlineColorAndroid={"#ffffffff"}
                         secureTextEntry={true}
                         placeholder="Password"
                         style={styles.inputContainer}
-                        onChangeText={(val) => this.setState({userPwd: val})}
-                        value={this.state.userPwd}/>
+                        onChangeText={(val) => this.setState({password: val})}
+                        onSubmitEditing={()=>this.onSubmitPassword()}
+                        value={this.state.password}/>
                 </View>
                 <View style={{flexDirection:'row',justifyContent:'center',marginBottom:10}}>
                     <View style={{flex:1,alignItems:'flex-start',marginLeft:40}}>
-                    <Text>회원가입</Text>
+                        <Text>ID/PW찾기</Text>
                     </View>
                     <View style={{flex:1,alignItems:'flex-end',marginRight:40}}>
-                    <Text>ID/PW찾기</Text>
+                        <Text onPress={()=>Actions.signup()}>회원가입</Text>
                     </View>
                 </View>
                 <Button title="로그인" color={'#ff8888'}
@@ -83,15 +90,15 @@ class Login extends Component {
         const renderView = this.state.loginType=='email' ? emailView : mainView
 
         return (
-            <View style={{flex:1,alignItems: 'center'}}>
+            <ScrollView>
                 <View style={styles.logoContainer}>
-                    <Text style={{fontSize:80,textAlign:'center',width:200,height:100,}}>
+                    <Text style={{fontSize:60,textAlign:'center'}}>
                         HAYT
                     </Text>
                 </View>
-                    {renderView}
+                {renderView}
                 <Spinner visible={this.state.showSpinner}/>
-            </View>
+            </ScrollView>
         )
     }
 
@@ -108,20 +115,24 @@ class Login extends Component {
     }
 
     login_email(){
-        API.login('email', ()=>this.login_callback())
+        let email = this.state.email
+        let password = this.state.password
+        if(email==null||password==null) return Alert.alert('알림','로그인 정보를 입력해주세요')
+        this.setState({showSpinner:true});
+        return API.login('email', (isCancel)=>this.login_callback(isCancel), {email,password})
     }
 }
 
 const styles = StyleSheet.create({
     logoContainer : {
-        flex:0.3,
+        marginTop:70,
         alignItems:'center',
-        justifyContent:'flex-end',
+        justifyContent:'center',
     },
     loginContainer : {
-        flex:0.7,
+        paddingVertical:70,
         justifyContent:'center',
-        alignItems:'center'
+        alignItems:'center',
     },
     inputContainer : {
         paddingLeft:35,
