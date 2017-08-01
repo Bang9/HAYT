@@ -149,6 +149,9 @@ dependencies {
     compile project(':react-native-fbsdk')
     compile project(':react-native-splash-screen')
 
+    // For animated GIF support
+    compile 'com.facebook.fresco:animated-gif:1.0.1'
+
     // RNFirebase required dependencies
     compile(project(':react-native-firebase')) {
         transitive = false
