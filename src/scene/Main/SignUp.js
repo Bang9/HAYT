@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, Image, StyleSheet, TextInput, View, Text, ScrollView, Alert} from "react-native";
+import {Dimensions, Image, StyleSheet, TextInput, View, Text, ScrollView, Alert, ToastAndroid} from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
 import {Actions} from 'react-native-router-flux'
 import API from '../../services/API'
@@ -235,7 +235,11 @@ class SignUp extends Component {
                     })
             })
             .then( ()=>{
-                this.setState({showSpinner:false},()=>Actions.pop())
+                this.setState({showSpinner:false},
+                    ()=>{
+                        Actions.pop();
+                        ToastAndroid.show('회원가입 성공!',ToastAndroid.SHORT);
+                    })
             })
             .catch( (err)=>{
                 this.setState({showSpinner:false})

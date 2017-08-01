@@ -48,7 +48,7 @@ class History extends Component {
         this.onRefresh()
     }
 
-    //!FIXME _[DONE] :: when using for ... in, order unpredictable
+    //!FIXME :: once -> on ?
     onRefresh(){
         this.setState({refreshing:true})
         let uid = API.get_uid();
