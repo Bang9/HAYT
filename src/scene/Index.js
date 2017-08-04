@@ -6,6 +6,7 @@ import Login from "./Main/Login";
 import Main from "./Main/Main";
 import SignUp from "./Main/SignUp"
 import API from "../services/API"
+import PushAPI from '../services/PushAPI'
 import SplashScreen from 'react-native-splash-screen'
 import StorageControl from "./Record/StorageControl";
 
@@ -53,6 +54,7 @@ class App extends Component {
 
     componentDidMount(prevProps,prevState){
         setInterval(()=>SplashScreen.hide(),1500);
+        PushAPI.onNotification()
     }
 
     render(){
@@ -94,6 +96,14 @@ class App extends Component {
                         title="회원가입"
                         renderBackButton={()=>this.backButton()}
                     />
+
+                    <Scene
+                        key="storage"
+                        component={StorageControl}
+                        title="Storage Control"
+                        hideNavBar={false}
+                        renderBackButton={()=>this.backButton()}
+                    />
                 </Scene>
             </Router>
         )
@@ -117,14 +127,16 @@ class App extends Component {
         if (this.sceneKey === "main" || this.sceneKey === "login") {
             Alert.alert(
                 '알림',
-                '앱을 종료하시겠습니까?', [{
-                    text: '네',
-                    onPress: () => BackHandler.exitApp()
-                },
+                '앱을 종료하시겠습니까?', [
+                    {
+                        text: '네',
+                        onPress: () => BackHandler.exitApp()
+                    },
                     {
                         text: '아니요'
                     }
                 ]
+
             );
             return true; //remain in app
         } else {

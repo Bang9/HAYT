@@ -1,4 +1,4 @@
-import { AsyncStorage ,Alert } from 'react-native'
+import { AsyncStorage ,Alert,ToastAndroid } from 'react-native'
 import firebase from '../commons/Firebase'
 import FBSDK from 'react-native-fbsdk';
 const {
@@ -14,7 +14,7 @@ class API {
         // authState string - facebook/kakao/email/null
         // return obj - {result,authType}
         try {
-            return await AsyncStorage.getItem('authType')
+            return await AsyncStorage.getItem('@Session:authType')
                 .then((authState)=>{
                     if (authState != null)
                         return {
@@ -57,10 +57,10 @@ class API {
                 break;
 
             case'kakao' :
-                this._email_Logout();
                 break;
 
             case'email' :
+                this._email_Logout();
                 break;
 
             default :
@@ -77,8 +77,8 @@ class API {
             photoURL : result.photoURL || 'none',
             uid : result.uid
         }
-        AsyncStorage.setItem('authType',authType)
-        AsyncStorage.setItem('userConfig',JSON.stringify(userConfig))
+        AsyncStorage.setItem('@Session:authType',authType)
+        AsyncStorage.setItem('@Session:userConfig',JSON.stringify(userConfig))
         console.log("SET USER CONFIG")
         return firebase.database().ref(`users/${result.uid}`).update({
             authType:authType,
@@ -116,8 +116,8 @@ class API {
 
     _email_Logout(){
         firebase.auth().signOut();
-        AsyncStorage.removeItem('authType')
-        AsyncStorage.removeItem('userConfig')
+        AsyncStorage.removeItem('@Session:authType')
+        AsyncStorage.removeItem('@Session:userConfig')
     }
 
     _fbAuth_Login(callback){ // @callback param : isCancel(boolean)
@@ -151,6 +151,8 @@ class API {
             .catch((error) => {
                 callback(true)
                 console.log(`Login fail with error: ${error}`);
+                if(error.code=='auth/user-disabled') return ToastAndroid.show('사용 불가능한 계정입니다', ToastAndroid.SHORT)
+                return Alert.alert('에러','관리자에게 문의하세요\n에러코드 : '+error.code+'\n'+error.message)
             });
 
     }
@@ -158,8 +160,8 @@ class API {
     _fbAuth_Logout(){
         LoginManager.logOut();
         firebase.auth().signOut();
-        AsyncStorage.removeItem('authType')
-        AsyncStorage.removeItem('userConfig')
+        AsyncStorage.removeItem('@Session:authType')
+        AsyncStorage.removeItem('@Session:userConfig')
     }
     get_uid(){
         return firebase.auth().currentUser.uid
