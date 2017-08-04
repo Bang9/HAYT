@@ -187,7 +187,7 @@ class SignUp extends Component {
                         onFocus={this.onFocus}
                         onChangeText={this.onChangeText}
                         onSubmitEditing={this.onSubmitPassword}
-                        returnKeyType='done'
+                        returnKeyType='next'
                         label='비밀번호'
                         error={errors.password}
                         title='6자 이상'
@@ -215,7 +215,10 @@ class SignUp extends Component {
                 </View>
 
                 <View style={styles.container}>
-                    <Button title='확인' onClick={()=>this.onSubmit()} color={TextField.defaultProps.tintColor} titleColor='white' />
+                    <Button
+                        title='확인' onClick={()=>this.onSubmit()}
+                        color={TextField.defaultProps.tintColor}
+                        buttonStyle={{margin:10,width: width * .8}}/>
                 </View>
                 <Spinner visible={this.state.showSpinner}/>
             </ScrollView>

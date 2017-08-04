@@ -19,13 +19,15 @@ class StorageControl extends Component{
     render(){
         return(
             <ScrollView>
-                <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+                <View style={{flex:1,justifyContent:'center',alignItems:'center',marginTop:60}}>
                     <View style={{alignItems:'center'}}>
                         <TextInput placeholder="key" style={{width:200}} onChangeText={(val)=>this.setState({key:val})}></TextInput>
                         <TextInput placeholder="value" style={{width:200}} onChangeText={(val)=>this.setState({value:val})}></TextInput>
                         <Button title="저장" color="red" onClick={()=>this.storeItem(this.state.key,this.state.value)}/>
-                        <Text>{"KEY : "+this.state.key}</Text>
-                        <Text>{"VALUE : "+this.state.value}</Text>
+                        <View style={{alignItems:'center', flexDirection:'row'}}>
+                        <Text style={{margin:5}}>{"KEY : "+this.state.key}</Text>
+                        <Text style={{margin:5}}>{"VALUE : "+this.state.value}</Text>
+                        </View>
                     </View>
                     <View  style={{flex:1}}>
                         <FlatList

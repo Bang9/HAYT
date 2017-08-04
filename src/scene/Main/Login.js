@@ -48,9 +48,11 @@ class Login extends Component {
                         style={styles.iconStyle}/>
                     <TextInput
                         ref={(ref)=>this.email = ref}
-                        underlineColorAndroid={"#ffffffff"}
                         placeholder="Email"
+                        underlineColorAndroid={"#ffffffff"}
                         style={styles.inputContainer}
+                        keyboardType='email-address'
+                        returnKeyType='next'
                         onChangeText={(val) => this.setState({email: val})}
                         onSubmitEditing={()=>this.onSubmitEmail()}
                         value={this.state.email}/>
@@ -63,10 +65,11 @@ class Login extends Component {
                         style={styles.iconStyle}/>
                     <TextInput
                         ref={(ref)=>this.password = ref}
-                        underlineColorAndroid={"#ffffffff"}
-                        secureTextEntry={true}
                         placeholder="Password"
+                        underlineColorAndroid={"#ffffffff"}
                         style={styles.inputContainer}
+                        secureTextEntry={true}
+                        returnKeyType='done'
                         onChangeText={(val) => this.setState({password: val})}
                         onSubmitEditing={()=>this.onSubmitPassword()}
                         value={this.state.password}/>
@@ -92,9 +95,11 @@ class Login extends Component {
         return (
             <ScrollView>
                 <View style={styles.logoContainer}>
-                    <Text style={{fontSize:60,textAlign:'center'}}>
-                        HAYT
-                    </Text>
+                    <Image
+                        style={{height:170,width:340}}
+                        resizeMode={Image.resizeMode.contain}
+                        source={require('../../img/logo.png')}
+                    />
                 </View>
                 {renderView}
                 <Spinner visible={this.state.showSpinner}/>
@@ -125,12 +130,12 @@ class Login extends Component {
 
 const styles = StyleSheet.create({
     logoContainer : {
-        marginTop:70,
+        marginTop:80,
         alignItems:'center',
         justifyContent:'center',
     },
     loginContainer : {
-        paddingVertical:70,
+        paddingVertical:40,
         justifyContent:'center',
         alignItems:'center',
     },

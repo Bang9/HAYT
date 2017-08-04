@@ -26,9 +26,8 @@ class RecordTab extends Component{
 
     render(){
         return(
-                <View style={{flex:1,justifyContent:'center', alignItems:'center', backgroundColor:global.backgroundColor}}>
+                <View style={{flex:1,justifyContent:'center', alignItems:'center'}}>
                     <ScrollableTabView
-                        //style={{flexDirection: "column"}}
                         locked={false}
                         tabBarPosition="top"
                         renderTabBar={() => <ImageTabBar tabStyle={{width:width*.3}} badgeNum={0} textStyle={{fontSize:12}}/>}

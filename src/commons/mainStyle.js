@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     width: 130,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: global.mainColor,
+    borderColor: '#ff8888',
     backgroundColor: "#fff",
     zIndex: 1,
   },

@@ -1,11 +1,11 @@
 import React, {Component} from "react";
 import {Dimensions, Text, View,FlatList, TouchableOpacity, TouchableNativeFeedback,
-    ListView, StyleSheet, Animated,Image,ScrollView} from "react-native";
+    ListView, StyleSheet, Animated,Image,ScrollView, Vibration, ToastAndroid, ProgressBar, ActivityIndicator} from 'react-native';
 import API from "../../services/API"
 import firebase from '../../commons/Firebase'
 const {width,height} = Dimensions.get('window');
 import EmotionBar from "../../components/EmotionBar";
-import Modal from 'react-native-modal'
+import PressModal from '../../components/PressModal'
 
 const timeConverter = (timeStamp)=>{
     let a = new Date(parseInt(timeStamp));
@@ -35,13 +35,12 @@ class History extends Component {
         super()
         this.state={
             emotionData : null,
+            refreshing : false,
             modalVisible:false,
             selectedData : null,
-            refreshing : false,
             index : 0,
             listData : [],
         }
-        this.initialState = this.state
     }
 
     componentWillMount(){
@@ -84,36 +83,40 @@ class History extends Component {
         return(
             <View>
                 {
-                    this.state.emotionData!=null&&
-                    <FlatList
-                        data = {this.state.listData}
-                        renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
-                            //this._renderRow(item)
-                            <HistoryRow data={item} selected={(key)=>{this.show_modal(key)}}/>
-                        }
-                        keyExtractor={(item => item.time)}
-                        refreshing={this.state.refreshing}
-                        onRefresh={() => this.onRefresh()}
-                        ListEmptyComponent={ ()=>
-                            <View style={{height:height-60,alignItems: "center",justifyContent:'center'}}>
-                                <Text style={{fontSize : 20,textAlign:'center'}}>{"Add Your\nEmotion History"}</Text>
-                            </View>}
-                         onEndReached={()=>this.handleData()}
-                         onEndReachedThreshold={0.2}
-                    />
+                    this.state.emotionData!=null ?
+                        <FlatList
+                            data = {this.state.listData}
+                            renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
+                                //this._renderRow(item)
+                                <HistoryRow data={item} showModal={(key)=>this.show_modal(key)}/>
+                            }
+                            keyExtractor={(item => item.time)}
+                            refreshing={this.state.refreshing}
+                            onRefresh={() => this.onRefresh()}
+                            ListEmptyComponent={ ()=>
+                                <View style={{height:height-60,alignItems: "center",justifyContent:'center'}}>
+                                    <Text style={{fontSize : 20,textAlign:'center'}}>{"Add Your\nEmotion History"}</Text>
+                                </View>}
+                            onEndReached={()=>this.handleData()}
+                            onEndReachedThreshold={0.2}
+                        />
+                        :
+                        <View style={{alignItems:'center',justifyContent:'center',height:height,marginTop:-60}}>
+                            <ActivityIndicator size="small" color="#ff8888" />
+                        </View>
                 }
                 <PressModal
                     modalVisible = {this.state.modalVisible}
-                    closeModal = {()=>this.close_modal()}
+                    onClose = {()=>this.close_modal()}
                     onClick = {()=>this.onRemove()}
+                    label = "삭제하기"
                 />
             </View>
         )
     }
 
     show_modal(key){
-        this.setState({selectedData:key})
-        this.setState({modalVisible:true})
+        this.setState({selectedData:key,modalVisible:true},()=>Vibration.vibrate([0,80]))
     }
 
     close_modal(){
@@ -125,6 +128,7 @@ class History extends Component {
         let ref = `users/${uid}/history`
         API.removeData(ref,this.state.selectedData);
         this.setState({modalVisible:false},()=>this.onRefresh())
+        ToastAndroid.show('삭제되었습니다',ToastAndroid.SHORT)
     }
 }
 
@@ -234,7 +238,7 @@ class HistoryRow extends Component {
                 <TouchableOpacity
                     style={styles.rowContainer}
                     onPress={()=>this.toggle()}
-                    onLongPress={() => this.props.selected(this.state.key)}
+                    onLongPress={() => this.props.showModal(this.state.key)}
                 >
                     <View style={styles.midWrapper}>
                         <EmotionBar
@@ -258,28 +262,6 @@ class HistoryRow extends Component {
     }
 }
 
-class PressModal extends Component{
-    render(){
-        return(
-            <Modal
-                isVisible={this.props.modalVisible}
-                onBackButtonPress={this.props.closeModal}
-                hideOnBack={true}>
-                <View style ={{borderRadius:0,alignSelf:'center',alignItems:'center',backgroundColor:'#fff',width:width*.7}}>
-                    <View style={{justifyContent:'center',alignItems:'center',backgroundColor:'#44aaff',width:width*.7,height:40}}>
-                        <Text style={{color:'#fff'}}>메뉴</Text>
-                    </View>
-                    <TouchableNativeFeedback
-                        onPress ={this.props.onClick}>
-                        <View style={{justifyContent:'center',alignItems:'center',width:width*.7,height:40}}>
-                            <Text style={{fontSize:16}}>삭제</Text>
-                        </View>
-                    </TouchableNativeFeedback>
-                </View>
-            </Modal>
-        )
-    }
-}
 
 //row container height -> first shown row size
 //row expand container height -> hide view

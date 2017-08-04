@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dimensions,Image} from "react-native";
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dimensions,Image, ActivityIndicator} from "react-native";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress'
@@ -12,7 +12,7 @@ class MainTab extends Component{
         super(props);
         this.state={
             newMessage:null,
-            currentHistory:[{emotions:[{emotion:'',value:0},{emotion:'',value:0},{emotion:'',value:0}]}]
+            currentHistory:null,
         }
         this.uid = firebase.auth().currentUser.uid//API.get_uid;
         this.ref = `users/${this.uid}/currentHistory`
@@ -20,17 +20,17 @@ class MainTab extends Component{
     componentWillMount(){
         API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
     }
-    // getCurrentHIstory(){
-    //     // let uid = API.get_uid()
-    //     // let ref = `users/${uid}/currentHistory`
-    //     API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
-    // }
-    componentWillUnmount(){
-        API.removeDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
+
+    componentDidMount(){
     }
+
+    componentWillUnmount(){
+        //FIXME :: ref.remove() occur an error when exit
+        //API.removeDataOn(this.ref)
+    }
+
     render(){
         return(
-
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                 {/* Rest of the app comes ABOVE the action button component !*/
                     //  <Image source={require('../../img/background.png')} style={styles.backgroundImage} />
@@ -40,10 +40,18 @@ class MainTab extends Component{
                         style={{width:200,height:200}}
                         source={{uri:'http://blogfiles.naver.net/MjAxNzAxMTZfMjU5/MDAxNDg0NTM4MTc1NDgw.NlXyGGYUuFv5aDbmJKyvVBCS7PkvAQlJjqwr5b7C6okg.ZowzZ8L-Ft_al1OXO9BDfFIUspwVFCUQCxrP-KBrajEg.GIF.gak05/%EB%8B%B9%ED%99%A9%ED%95%98%EB%8A%94_%EB%9D%BC%EC%9D%B4%EC%96%B8.gif'}}/>
                 </View>
+
                 <View style={{flex:2,flexDirection:'row',alignItems:'flex-start'}}>
+
                     {
-                        this.state.currentHistory!=null &&
-                        this.state.currentHistory[0].emotions.map( (emotions,i) => {
+                        /* DONE :: currentHistory structure updated
+                         * currentHistory = [ {comment, emotions, stamp},{comment,emotions,stamp}, ... ]
+                         * changed next
+                         * => currentHistory : [ {emotion:'감정',value:'0-5'}, ...]
+                         * => this.state.currentHistory.map( (emotions,i) => {...} ) // emotions = {emotion:'감정',value:'0-5'}
+                         */
+                        this.state.currentHistory!=null ?
+                        this.state.currentHistory.map( (emotions,i) => {
                             return(
                                 <AnimatedCircularProgress
                                     key={i}
@@ -52,7 +60,7 @@ class MainTab extends Component{
                                     width={10}
                                     rotation={0}
                                     friction={8}
-                                    fill={emotions.value * 19.999}
+                                    fill={emotions.value * 6.66666667}
                                     tintColor={'#ff8888'}
                                     backgroundColor={'#ff888844'}>
                                     {
@@ -63,7 +71,9 @@ class MainTab extends Component{
                                                         {emotions.emotion}
                                                     </Text>
                                                     <Text style={{alignSelf:'center', fontSize:10}}>
-                                                        {Math.round(fill/20)}
+                                                        {//Math.round(fill/6.66666667)
+                                                            (fill/6.66666667).toFixed(1)
+                                                        }
                                                     </Text>
                                                 </View>
                                             </View>
@@ -72,6 +82,10 @@ class MainTab extends Component{
                                 </AnimatedCircularProgress>
                             )
                         })
+                        :
+                        <View style={{alignItems:'center',justifyContent:'center',height:height,marginTop:-60}}>
+                        <ActivityIndicator size="small" color="#ff8888" />
+                        </View>
                     }
                 </View>
                 <ActionButton buttonColor="rgba(231,76,60,1)" verticalOrientation="down" position="right" autoInactive={false}>

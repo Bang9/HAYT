@@ -54,7 +54,6 @@ class Record extends Component{
             <View style={{flex:1}}>
                 <View style={{flex:0.5,justifyContent:'center'}}>
                     <Text style={{alignSelf:'center'}}>{"\n"}감정을 최대 세개 선택해 주세요{"\n"}</Text>
-
                     <View style={{marginTop:10,alignSelf:'center'}}>
                         {/*<Text style={{alignSelf:'flex-end'}}>{this.timeConverter(Date.now())}</Text>*/}
                         <EmotionBar

@@ -60,7 +60,7 @@ class SelectedEmotion extends Component {
                         minimumValue={0}
                         maximumValue={5}
                         step={1}
-                        minimumTrackTintColor={global.mainColor}
+                        minimumTrackTintColor='#ff8888'
                         maximumTrackTintColor="#eee"
                         thumbTintColor="#efefef"
                         thumbTouchSize={{width:80,height:60}}
