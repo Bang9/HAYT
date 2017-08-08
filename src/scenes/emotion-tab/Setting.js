@@ -32,23 +32,33 @@ class Setting extends Component{
                 hour:0,
                 minute:0,
                 isSet:false
-            }
+            },
+            dev:0
         }
     }
     componentWillMount(){
-        AsyncStorage.getItem('@Session:userConfig')
-            .then( (data)=>this.setState({userConfig:JSON.parse(data)}) )
-        AsyncStorage.getItem('@Session:authType')
-            .then( (data)=>this.setState({authType:data}) )
-        AsyncStorage.getItem('@Setting:alarm')
-            .then( (data)=>{if(data) this.setState({alarm:JSON.parse(data)})} )
+        Promise.all([
+            AsyncStorage.getItem('@Session:userConfig'),
+            AsyncStorage.getItem('@Session:authType'),
+            AsyncStorage.getItem('@setting-detail:alarm')
+        ]).then( (data)=>{ // @data = [@Session:userConfig,@Session:authType,@setting-detail:alarm]
+                this.setState({userConfig : JSON.parse(data[0]), authType:data[1]})
+                if(data[3]) this.setState({alarm:JSON.parse(data[2])})
+            }
+        )
+        // AsyncStorage.getItem('@Session:userConfig')
+        //     .then( (data)=>this.setState({userConfig:JSON.parse(data)}) )
+        // AsyncStorage.getItem('@Session:authType')
+        //     .then( (data)=>this.setState({authType:data}) )
+        // AsyncStorage.getItem('@setting-detail:alarm')
+        //     .then( (data)=>{if(data) this.setState({alarm:JSON.parse(data)})} )
     }
 
     handleAlarm(){
         // Is set alarm?
         if(this.state.alarm.isSet){ //yes
             PushAPI.removeScheduleNotification('alarm_notification')
-            AsyncStorage.removeItem('@Setting:alarm')
+            AsyncStorage.removeItem('@setting-detail:alarm')
             this.setState({alarm:{...this.state.alarm,isSet:false}})
             ToastAndroid.show(`알람이 해제되었습니다`, ToastAndroid.SHORT);
         }else { //no
@@ -56,14 +66,13 @@ class Setting extends Component{
                 () => {
                     let {hour, minute} = this.state.alarm
                     PushAPI.setScheduleNotification({
-                        fire_date: this.getAlarmTime(hour, minute), //RN's converter is used, accept epoch time and whatever that converter supports
+                        fire_date: new Date().getTime()+5000,//this.getAlarmTime(hour, minute), //RN's converter is used, accept epoch time and whatever that converter supports
                         id: "alarm_notification", //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
                         body: "오늘 하루 어떠셨나요?",
-                        icon: "ic_launcher",
-                        large_icon: "ic_launcher",
+                        push_type:'alarm',
                         repeat_interval: "day" // minute,hour,day,week
                     })
-                    AsyncStorage.setItem("@Setting:alarm", JSON.stringify({hour: hour, minute: minute, isSet: true}))
+                    AsyncStorage.setItem("@setting-detail:alarm", JSON.stringify({hour: hour, minute: minute, isSet: true}))
                     ToastAndroid.show(`알람이 설정되었습니다`, ToastAndroid.SHORT);
                 }
             )
@@ -120,6 +129,7 @@ class Setting extends Component{
         hour==0 ? hour=12 : hour<10 ? hour='0'+hour : hour>13 ? hour-=12 : hour
         minute<10 ? minute='0'+minute : minute
 
+
         const setView = (
             <View style={styles.settingButton}>
                 <Text style={{alignSelf:'center'}}>{`${meridiem} ${hour}:${minute}`}</Text>
@@ -135,59 +145,75 @@ class Setting extends Component{
         const profile_photo = this.state.userConfig.photoURL=='none' ? require('../../img/default_profile.png') : {uri:this.state.userConfig.photoURL}
         return(
             <ScrollView style={{backgroundColor:'#fff'}}>
-                <View style={styles.settingContainer}>
-                    <Text style={styles.settingTitle}>프로필</Text>
-
-                    <View style={styles.profileContainer}>
-                        <Image
-                            style={styles.profilePhoto}
-                            source={profile_photo}
-                        />
-                        <View style={styles.profileUserConfig}>
-                            <Text style={{fontSize:10}}>{"Login with "+this.state.authType}</Text>
-                            <Text style={{fontSize:15,color:'#555'}}>{this.state.userConfig.name}</Text>
-                        </View>
-                        <TouchableOpacity style={{position:'absolute',right:0,alignSelf:'center'}}>
-                            <View style={styles.profileButtonWrapper}>
-                                <Image
-                                    style={styles.profileButton}
-                                    source={require('../../img/goButton.png')}
-                                />
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                <View style={styles.settingContainer}>
-                    <Text style={styles.settingTitle}>알람</Text>
-                    <TouchableOpacity
-                        onPress={()=>this.handleAlarm()}>
-                        {alarmView}
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.settingContainer}>
-                    <Text style={styles.settingTitle}>계정</Text>
-                    <TouchableOpacity
-                        onPress={()=>{API.logout(this.state.authType,()=>Actions.login())}}>
-                        <View style={styles.settingButton}>
-                            <Text style={{alignSelf:'center'}}>로그아웃</Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-                {
-                    __DEV__ &&
+                <TouchableOpacity style={{height:550}} activeOpacity={1} onPress={()=>this.setState({dev:this.state.dev+1})}>
                     <View style={styles.settingContainer}>
-                        <Text style={styles.settingTitle}>개발자 설정</Text>
+                        <Text style={styles.settingTitle}>프로필</Text>
+
+                        <View style={styles.profileContainer}>
+                            <Image
+                                style={styles.profilePhoto}
+                                source={profile_photo}
+                            />
+                            <View style={styles.profileUserConfig}>
+                                <Text style={{fontSize:10}}>{"Login with "+this.state.authType}</Text>
+                                <Text style={{fontSize:15,color:'#555'}}>{this.state.userConfig.name}</Text>
+                            </View>
+                            <TouchableOpacity style={{position:'absolute',right:0,alignSelf:'center'}}>
+                                <View style={styles.profileButtonWrapper}>
+                                    <Image
+                                        style={styles.profileButton}
+                                        source={require('../../img/goButton.png')}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+
+                    <View style={styles.settingContainer}>
+                        <Text style={styles.settingTitle}>알람</Text>
                         <TouchableOpacity
-                            onPress={() => Actions.storage()}>
+                            onPress={()=>this.handleAlarm()}>
+                            {alarmView}
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.settingContainer}>
+                        <Text style={styles.settingTitle}>계정</Text>
+                        <TouchableOpacity
+                            onPress={()=>{API.logout(this.state.authType,()=>Actions.login())}}>
                             <View style={styles.settingButton}>
-                                <Text style={{alignSelf: 'center'}}>Storage Control</Text>
+                                <Text style={{alignSelf:'center'}}>로그아웃</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
-                }
-                <Spliter/>
+                    {
+                        (__DEV__ || this.state.dev>=30) &&
+                        <View style={styles.settingContainer}>
+                            <Text style={styles.settingTitle}>개발자 설정</Text>
+                            <TouchableOpacity
+                                onPress={() => Actions.storage()}>
+                                <View style={styles.settingButton}>
+                                    <Text style={{alignSelf: 'center'}}>Storage Control</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <Spliter/>
+                            <TouchableOpacity
+                                onPress={() => PushAPI.localNotification({
+                                    title:'타이틀',body:'바디',
+                                    vibrate: 300,
+                                    show_in_foreground:true,
+                                    large_icon:'ic_launcher', //large icon null => none  this wiil be app icon
+                                    icon:'ic_launcher', //icon null=>ic_launcher inthe mipmap  this will be white small icon
+                                    priority: "high", // as FCM payload, you can relace this with custom icon you put in mipmap
+                                })}>
+                                <View style={styles.settingButton}>
+                                    <Text style={{alignSelf: 'center'}}>Local Notification</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    }
+                    <Spliter/>
+                </TouchableOpacity>
             </ScrollView>
         )
     }
@@ -211,7 +237,7 @@ const styles = StyleSheet.create({
     settingTitle:{
         fontSize:12,
         paddingHorizontal:15,
-        paddingVertical: 10,
+        paddingVertical: 8,
         backgroundColor:'#f5f5f5',
     },
     settingButton:{

@@ -83,9 +83,7 @@ class MainTab extends Component{
                             )
                         })
                         :
-                        <View style={{alignItems:'center',justifyContent:'center',height:height,marginTop:-60}}>
                         <ActivityIndicator size="small" color="#ff8888" />
-                        </View>
                     }
                 </View>
                 <ActionButton buttonColor="rgba(231,76,60,1)" verticalOrientation="down" position="right" autoInactive={false}>

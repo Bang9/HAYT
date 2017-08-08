@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {Dimensions, Text, View,FlatList, TouchableOpacity, TouchableNativeFeedback,
     ListView, StyleSheet, Animated,Image,ScrollView, Vibration, ToastAndroid, ProgressBar, ActivityIndicator} from 'react-native';
 import API from "../../services/API"
-import firebase from '../../commons/Firebase'
 const {width,height} = Dimensions.get('window');
 import EmotionBar from "../../components/EmotionBar";
 import PressModal from '../../components/PressModal'

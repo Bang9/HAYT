@@ -117,7 +117,7 @@ class Record extends Component{
     }
 
     resetState(){
-        this.setState(this.baseState,()=>{ // record scene state reset
+        this.setState(this.baseState,()=>{ // record scenes state reset
             this.barRef.some((obj) => {obj.buttonReset()}); // and EmotionBar state reset
             ToastAndroid.show('기록되었습니다.',ToastAndroid.SHORT);
         })
