@@ -13,11 +13,11 @@ import ImageTabBar from "../../components/ImageTabBar";
 import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 
-import History from '../RecordDetail/History'
-import Record from '../RecordDetail/Record'
-import Setting from '../RecordDetail/Setting'
+import History from '../emotion-tab/History'
+import Record from '../emotion-tab/Record'
+import Setting from '../emotion-tab/Setting'
 
-class RecordTab extends Component{
+class EmotionTab extends Component{
     constructor(props){
         super(props);
     }
@@ -44,4 +44,4 @@ class RecordTab extends Component{
         )
     }
 }
-export default RecordTab;
+export default EmotionTab;

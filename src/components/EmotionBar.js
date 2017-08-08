@@ -53,24 +53,27 @@ class EmotionBar extends Component{
 }
 
 class EmotionGraph extends Component{
+    constructor(){
+        super()
+        this.color = [
+            {backgroundColor:'#ff888844',tintColor:'#ff8888'},//good
+            {backgroundColor:'#77664444',tintColor:'#776644'},//bad
+            {backgroundColor:'#1199bb44',tintColor:'#1199bb'},//sad
+            {backgroundColor:'#ffcc2944',tintColor:'#ffcc29'}//normal
+        ]
+        this.colorEnum = {
+            "만족":0,"행복":0,"설렘":0,"즐거움":0,
+            "화남":1,"불쾌":1,"짜증":1,"초조":1,
+            "후회":2,"무기력":2,"허탈":2,"우울":2,
+            "소소":3,"평온":3,"지루함":3
+        }
+    }
     static defaultProps = {
         emotion : "감정",
         color : "#666666",
-        value : 0
+        value : 0,
     }
-
     render(){
-        const good=["만족","행복","설렘","즐거움"]   // pink
-        const bad=["화남","불쾌","짜증","초조"]      // gray
-        const sad=["후회","무기력","허탈","우울"]    // blue
-        const normal=["소소","평온","지루함"]         // yellow
-        let backgroundColor,tintColor
-        if(sad.includes(this.props.emotion)){ backgroundColor='#1199bb44'; tintColor="#1199bb" }
-        else if(bad.includes(this.props.emotion)){ backgroundColor='#77664444'; tintColor="#776644" }
-        else if(normal.includes(this.props.emotion)){ backgroundColor='#ffcc2944'; tintColor="#ffcc29" }
-        else { backgroundColor='#ff888844'; tintColor="#ff8888" }
-        // let backgroundColor='#ff888844'
-        // let tintColor="#ff8888"
         return(
             <CircularProgress
                 style={{margin:10}}
@@ -78,8 +81,8 @@ class EmotionGraph extends Component{
                 width={2}
                 rotation={0}
                 fill={this.props.value * 19.99}
-                tintColor={tintColor}
-                backgroundColor={backgroundColor}>
+                tintColor={this.color[this.colorEnum[this.props.emotion]].tintColor}
+                backgroundColor={this.color[this.colorEnum[this.props.emotion]].backgroundColor}>
                 {
                     (fill) => (
                         <View style={{width:50,height:50,position:'absolute',right:0,left:0,bottom:0,top:0,justifyContent:'center'}}>

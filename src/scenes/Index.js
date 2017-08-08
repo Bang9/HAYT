@@ -1,21 +1,29 @@
 import React, {Component} from "react";
-import {Alert, BackHandler, Image, Platform, StatusBar, StyleSheet, TouchableOpacity, AsyncStorage ,View, Text} from "react-native";
+import {Alert, BackHandler, Image, Platform, StatusBar, StyleSheet,
+    TouchableOpacity, AsyncStorage ,View, Text, AppState} from "react-native";
 
+//modules
 import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
-import Login from "./Main/Login";
-import Main from "./Main/Main";
-import SignUp from "./Main/SignUp"
+import SplashScreen from 'react-native-splash-screen'
+
+//scenes
+import Login from "./main-login/Login";
+import Main from "./main-tab/Main";
+import SignUp from "./main-login/SignUp"
+import StorageControl from "./setting-detail/StorageControl";
+
+//services
 import API from "../services/API"
 import PushAPI from '../services/PushAPI'
-import SplashScreen from 'react-native-splash-screen'
-import StorageControl from "./Record/StorageControl";
 
+//global states
 global.mainColor='#ff8888'
 global.backgroundColor="#ffb56d10"
 global.userConfig = {
     uid:null,
     pushToken:null,
 }
+global.appState = AppState.currentState
 
 /*
  Scene props = {
@@ -35,11 +43,13 @@ class App extends Component {
         super(props)
         this.state={
             onLoading : true,
-            authState : false
+            authState : false,
         }
     }
 
     componentWillMount(){
+        this.onSplashScreen();
+
         API.getAuth()
             .then( (data) => {
                 if(data.result){
@@ -54,12 +64,29 @@ class App extends Component {
 
     componentDidMount(prevProps,prevState){
         setInterval(()=>SplashScreen.hide(),1500);
+        AppState.addEventListener('change', (state)=>this.handleAppStateChange(state));
         PushAPI.onNotification()
     }
 
+    componentWillUnmount() {
+        AppState.removeEventListener('change', (state)=>this.handleAppStateChange(state));
+    }
+
+    handleAppStateChange(nextAppState){
+        if (global.appState.match(/inactive|background/) && nextAppState === 'active') {
+            console.log('App has come to the foreground!')
+        }
+        global.appState = nextAppState;
+    }
+
+    onSplashScreen(){
+        SplashScreen.show()
+        setInterval(()=>SplashScreen.hide(),1500);
+    }
+
+
     render(){
         if(this.state.onLoading){
-            SplashScreen.show()
             return(<View/>)
         }
 
@@ -191,4 +218,4 @@ const styles = StyleSheet.create({
 
 export default App;
 
-console.ignoredYellowBox = ['Setting a timer'];
+console.ignoredYellowBox = ['setting-detail a timer'];

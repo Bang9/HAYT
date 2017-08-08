@@ -5,8 +5,7 @@ import {Actions} from "react-native-router-flux";
 import ScrollableTabView from "react-native-scrollable-tab-view";
 import ImageTabBar from "../../components/ImageTabBar";
 import MainTab from "./MainTab";
-import RecordTab from "../Record/RecordTab";
-import Login from '../Main/Login'
+import EmotionTab from "./EmotionTab";
 import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 
@@ -17,7 +16,6 @@ class Main extends Component {
         };
     }
     componentWillMount(){
-        //Session.getSession();
     }
 
     render(){
@@ -34,7 +32,7 @@ class Main extends Component {
                     initialPage={0}>
 
                     <MainTab tabLabel="메인"/>
-                    <RecordTab tabLabel="기록"/>
+                    <EmotionTab tabLabel="기록"/>
                 </ScrollableTabView>
             </View>
         )
