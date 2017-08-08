@@ -15,6 +15,7 @@ class MainTab extends Component{
             newMessage:null,
             currentHistory:null,
             modalVisible:false,
+            comment : "",
         }
         this.uid = firebase.auth().currentUser.uid//API.get_uid;
         this.ref = `users/${this.uid}/currentHistory`
@@ -115,9 +116,23 @@ class MainTab extends Component{
                 <CommentModal
                     modalVisible = {this.state.modalVisible}
                     closeModal = {()=>this.close_modal()}
-                    onClick = {()=>{}}
+                    onClick = {(diary)=>{this.send_data(diary)}}
                 />
             </View>
+        )
+    }
+    send_data(letter){
+        this.setState({comment:letter,modalVisible:false,},()=> {
+                let uid = API.get_uid();
+                let ref = `users/${uid}/history/${Date.now()}`;
+                let data = {
+                    emotions : this.state.selectedEmotions,
+                    comment : this.state.comment
+                }
+                API.writeData(ref,data)
+                    .then( this.resetState() )
+                    .catch( (err) => Alert.alert("에러발생",err.message))
+            }
         )
     }
 }
@@ -162,10 +177,11 @@ class CommentModal extends Component{
                         style ={{width:270,height:300,margin:20,}}
                         multiline = {true}
                         underlineColorAndroid='#fff'
-                        textAlignVertical='top' />
+                        textAlignVertical='top'
+                        onChangeText={(text)=>{if(text.length<=120)this.setState({comment:text})}}/>
 
                     <TouchableNativeFeedback
-                        onPress={ ()=> this.props.closeModal() }
+                        onPress={()=>{this.props.onClick(this.state.comment); this.setState({comment:''}); this.props.closeMoal()}}
                         delayPressIn={0}
                         background={TouchableNativeFeedback.SelectableBackground()}>
                         <View style={{backgroundColor:'#1add9d',height:50,width:500,alignItems:'center',justifyContent:'center'}}>
