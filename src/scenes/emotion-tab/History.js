@@ -87,7 +87,7 @@ class History extends Component {
                             data = {this.state.listData}
                             renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
                                 //this._renderRow(item)
-                                <HistoryRow data={item} showModal={(key)=>this.show_modal(key)}/>
+                            {if(item.emotions) return <HistoryRow data={item} showModal={(key)=>this.show_modal(key)}/>}
                             }
                             keyExtractor={(item => item.time)}
                             refreshing={this.state.refreshing}

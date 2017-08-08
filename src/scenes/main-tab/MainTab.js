@@ -1,12 +1,13 @@
 import React, {Component} from "react";
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback} from "react-native";
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View,
+    StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback, ToastAndroid,Alert} from "react-native";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress'
 import API from '../../services/API'
 import firebase from'../../commons/Firebase'
 import Modal from 'react-native-modal'
-const {width,height} = Dimensions.get('window')
+const {width,height} = Dimensions.get('window');
 
 class MainTab extends Component{
     constructor(props){
@@ -21,7 +22,7 @@ class MainTab extends Component{
         this.ref = `users/${this.uid}/currentHistory`
     }
     componentWillMount(){
-        API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}))
+        API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}));
     }
 
     componentDidMount(){
@@ -31,22 +32,13 @@ class MainTab extends Component{
         //FIXME :: ref.remove() occur an error when exit
         //API.removeDataOn(this.ref)
     }
-    show_modal(){
-        this.setState({modalVisible:true})
-    }
-    close_modal(){
-        this.setState({modalVisible:false})
-    }
     render(){
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                 {/* Rest of the app comes ABOVE the action button component !*/
                     <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} />
                 }
-
-
-                <View style={{flex:2,flexDirection:'row',alignItems:'flex-start'}}>
-
+                <View style={{flex:2,alignSelf:'flex-start',marginTop:10,flexDirection:'row',justifyContent:'flex-start'}}>
                     {
                         /* DONE :: currentHistory structure updated
                          * currentHistory = [ {comment, emotions, stamp},{comment,emotions,stamp}, ... ]
@@ -54,58 +46,58 @@ class MainTab extends Component{
                          * => currentHistory : [ {emotion:'감정',value:'0-5'}, ...]
                          * => this.state.currentHistory.map( (emotions,i) => {...} ) // emotions = {emotion:'감정',value:'0-5'}
                          */
-                        this.state.currentHistory!=null ?
-                        this.state.currentHistory.map( (emotions,i) => {
-                            return(
-                                <AnimatedCircularProgress
-                                    key={i}
-                                    style={{marginRight:60, marginTop:10, margin:-40}}
-                                    size={60}
-                                    width={10}
-                                    rotation={0}
-                                    friction={8}
-                                    fill={emotions.value * 6.66666667}
-                                    tintColor={'#ff8888'}
-                                    backgroundColor={'#ff888844'}>
-                                    {
-                                        (fill) => (
-                                            <View style={{width:80,height:80,position:'absolute',right:0,left:0,bottom:0,top:0,justifyContent:'center'}}>
-                                                <View >
-                                                    <Text style={{alignSelf:'center', fontSize:13}}>
-                                                        {emotions.emotion}
-                                                    </Text>
-                                                    <Text style={{alignSelf:'center', fontSize:10}}>
-                                                        {//Math.round(fill/6.66666667)
-                                                            (fill/6.66666667).toFixed(1)
-                                                        }
-                                                    </Text>
+                        // FIXME :: Render using flatlist more suitable
+                        this.state.currentHistory!==null ?
+                            this.state.currentHistory.map( (emotions,i) => {
+                                return(
+                                    <AnimatedCircularProgress
+                                        key={i}
+                                        style={{margin:10}}
+                                        size={60}
+                                        width={6}
+                                        rotation={0}
+                                        friction={8}
+                                        fill={emotions.value * 6.66666667}
+                                        tintColor={'#ff8888'}
+                                        backgroundColor={'#ff888844'}>
+                                        {
+                                            (fill) => (
+                                                <View style={{width:60,height:60,position:'absolute',right:0,left:0,bottom:0,top:0,justifyContent:'center'}}>
+                                                    <View >
+                                                        <Text style={{alignSelf:'center', fontSize:13}}>
+                                                            {emotions.emotion}
+                                                        </Text>
+                                                        <Text style={{alignSelf:'center', fontSize:10}}>
+                                                            {//Math.round(fill/6.66666667)
+                                                                (fill/6.66666667).toFixed(1)
+                                                            }
+                                                        </Text>
+                                                    </View>
                                                 </View>
-                                            </View>
-                                        )
-                                    }
-                                </AnimatedCircularProgress>
-                            )
-                        })
-                        :
-                        <ActivityIndicator size="small" color="#ff8888" />
+                                            )
+                                        }
+                                    </AnimatedCircularProgress>
+                                )
+                            })
+                            :
+                            <ActivityIndicator size="small" color="#ff8888" />
                     }
                 </View>
+
+                {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
                 <ActionButton buttonColor="rgba(231,76,60,1)" verticalOrientation="down" position="right" autoInactive={false}>
+                    <ActionButton.Item  title="Diary" onPress={()=>this.show_modal()}>
+                        <Icon name="ios-create" style={styles.actionButtonIcon} />
+                    </ActionButton.Item>
                     <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
                         <Icon name="md-create" style={styles.actionButtonIcon} />
                     </ActionButton.Item>
                     <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => {}}>
                         <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#1abc9c' title="All Tasks" onPress={() => {}}>
-                        <Icon name="md-done-all" style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
-                    <ActionButton.Item  title="Diary" onPress={() => {this.show_modal()}}>
-                        <Icon name="md-done-all" style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
                 </ActionButton>
 
-                <View style={{flex:5,justifyContent:'center'}}>
+                <View style={{flex:8,justifyContent:'center'}}>
                     <Image
                         style={{width:150,height:150, borderRadius : 100}}
                         source={require('../../img/example.gif')}/>
@@ -119,19 +111,31 @@ class MainTab extends Component{
             </View>
         )
     }
+
+    show_modal(){
+        this.setState({modalVisible:true})
+    }
+    close_modal(){
+        this.setState({modalVisible:false})
+    }
+    resetState(){
+        this.setState({modalVisible:false},()=>ToastAndroid.show('기록되었습니다.',ToastAndroid.SHORT))
+    }
     send_data(letter){
-        this.setState({comment:letter,modalVisible:false,},()=> {
-                let uid = API.get_uid();
-                let ref = `users/${uid}/history/${Date.now()}`;
-                let data = {
-                    emotions : this.state.selectedEmotions,
-                    comment : this.state.comment
-                }
-                API.writeData(ref,data)
-                    .then( this.resetState() )
-                    .catch( (err) => Alert.alert("에러발생",err.message))
-            }
-        )
+        let uid = API.get_uid();
+        let data = {
+            timeStamp : Date.now(),
+            comment : letter,
+            visible : true,
+        };
+        let newPostKey = API.getPushKey('diarys');
+        let updates={};
+        updates['/diarys/'+newPostKey] = data;
+        updates[`/users/${uid}/diary/${newPostKey}`] = data;
+
+        return API.updateData(updates)
+            .then( ()=>this.resetState() )
+            .catch( (err) => Alert.alert("에러발생",JSON.stringify(err)))
     }
 }
 
@@ -159,14 +163,17 @@ class CommentModal extends Component{
             comment:'',
         }
     }
-    close(){
-
+    handlePress(){
+        this.props.onClick(this.state.comment);
+        this.setState({comment:''});
+        this.props.closeModal()
     }
     render(){
         return(
             <Modal
                 isVisible={this.props.modalVisible}
-                hideOnBack={true}>
+                hideOnBack={true}
+                onBackButtonPress={this.props.closeModal}>
 
                 <View style ={{justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>
                     <Text style={{marginTop:20}}>Diary</Text>
@@ -179,7 +186,7 @@ class CommentModal extends Component{
                         onChangeText={(text)=>{if(text.length<=120)this.setState({comment:text})}}/>
 
                     <TouchableNativeFeedback
-                        onPress={()=>{this.props.onClick(this.state.comment); this.setState({comment:''}); this.props.closeMoal()}}
+                        onPress={()=>this.handlePress()}
                         delayPressIn={0}
                         background={TouchableNativeFeedback.SelectableBackground()}>
                         <View style={{backgroundColor:'#1add9d',height:50,width:500,alignItems:'center',justifyContent:'center'}}>
