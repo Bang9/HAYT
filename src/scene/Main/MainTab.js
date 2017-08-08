@@ -146,7 +146,9 @@ class CommentModal extends Component{
             comment:'',
         }
     }
+    close(){
 
+    }
     render(){
         return(
             <Modal
@@ -163,6 +165,7 @@ class CommentModal extends Component{
                         textAlignVertical='top' />
 
                     <TouchableNativeFeedback
+                        onPress={ ()=> this.props.closeModal() }
                         delayPressIn={0}
                         background={TouchableNativeFeedback.SelectableBackground()}>
                         <View style={{backgroundColor:'#1add9d',height:50,width:500,alignItems:'center',justifyContent:'center'}}>
