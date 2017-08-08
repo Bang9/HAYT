@@ -1,10 +1,11 @@
 import React, {Component} from "react";
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dimensions,Image, ActivityIndicator} from "react-native";
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View, StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback} from "react-native";
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {AnimatedCircularProgress} from 'react-native-circular-progress'
 import API from '../../services/API'
 import firebase from'../../commons/Firebase'
+import Modal from 'react-native-modal'
 const {width,height} = Dimensions.get('window')
 
 class MainTab extends Component{
@@ -13,6 +14,7 @@ class MainTab extends Component{
         this.state={
             newMessage:null,
             currentHistory:null,
+            modalVisible:false,
         }
         this.uid = firebase.auth().currentUser.uid//API.get_uid;
         this.ref = `users/${this.uid}/currentHistory`
@@ -28,18 +30,19 @@ class MainTab extends Component{
         //FIXME :: ref.remove() occur an error when exit
         //API.removeDataOn(this.ref)
     }
-
+    show_modal(){
+        this.setState({modalVisible:true})
+    }
+    close_modal(){
+        this.setState({modalVisible:false})
+    }
     render(){
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                 {/* Rest of the app comes ABOVE the action button component !*/
-                    //  <Image source={require('../../img/background.png')} style={styles.backgroundImage} />
+                    <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} />
                 }
-                <View style={{flex:8,justifyContent:'center'}}>
-                    <Image
-                        style={{width:200,height:200}}
-                        source={{uri:'http://blogfiles.naver.net/MjAxNzAxMTZfMjU5/MDAxNDg0NTM4MTc1NDgw.NlXyGGYUuFv5aDbmJKyvVBCS7PkvAQlJjqwr5b7C6okg.ZowzZ8L-Ft_al1OXO9BDfFIUspwVFCUQCxrP-KBrajEg.GIF.gak05/%EB%8B%B9%ED%99%A9%ED%95%98%EB%8A%94_%EB%9D%BC%EC%9D%B4%EC%96%B8.gif'}}/>
-                </View>
+
 
                 <View style={{flex:2,flexDirection:'row',alignItems:'flex-start'}}>
 
@@ -55,8 +58,8 @@ class MainTab extends Component{
                             return(
                                 <AnimatedCircularProgress
                                     key={i}
-                                    style={{margin:10}}
-                                    size={80}
+                                    style={{marginRight:60, marginTop:10, margin:-40}}
+                                    size={60}
                                     width={10}
                                     rotation={0}
                                     friction={8}
@@ -98,7 +101,22 @@ class MainTab extends Component{
                     <ActionButton.Item buttonColor='#1abc9c' title="All Tasks" onPress={() => {}}>
                         <Icon name="md-done-all" style={styles.actionButtonIcon} />
                     </ActionButton.Item>
+                    <ActionButton.Item  title="Diary" onPress={() => {this.show_modal()}}>
+                        <Icon name="md-done-all" style={styles.actionButtonIcon} />
+                    </ActionButton.Item>
                 </ActionButton>
+
+                <View style={{flex:5,justifyContent:'center'}}>
+                    <Image
+                        style={{width:150,height:150, borderRadius : 100}}
+                        source={require('../../img/example.gif')}/>
+                </View>
+
+                <CommentModal
+                    modalVisible = {this.state.modalVisible}
+                    closeModal = {()=>this.close_modal()}
+                    onClick = {()=>{}}
+                />
             </View>
         )
     }
@@ -120,5 +138,41 @@ const styles = StyleSheet.create({
     },
 });
 
+
+class CommentModal extends Component{
+    constructor(props){
+        super(props)
+        this.state={
+            comment:'',
+        }
+    }
+
+    render(){
+        return(
+            <Modal
+                isVisible={this.props.modalVisible}
+                hideOnBack={true}>
+
+                <View style ={{justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>
+                    <Text style={{marginTop:20}}>Diary</Text>
+                    <TextInput
+                        autoFocus={true}
+                        style ={{width:270,height:300,margin:20,}}
+                        multiline = {true}
+                        underlineColorAndroid='#fff'
+                        textAlignVertical='top' />
+
+                    <TouchableNativeFeedback
+                        delayPressIn={0}
+                        background={TouchableNativeFeedback.SelectableBackground()}>
+                        <View style={{backgroundColor:'#1add9d',height:50,width:500,alignItems:'center',justifyContent:'center'}}>
+                            <Text style={{fontSize:16,color:'#fff'}} >확 인</Text>
+                        </View>
+                    </TouchableNativeFeedback>
+                </View>
+            </Modal>
+        )
+    }
+}
 
 
