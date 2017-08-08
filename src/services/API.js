@@ -182,8 +182,16 @@ class API {
         return firebase.database().ref(ref).off('value',(snapshot)=>callback(snapshot));
     }
 
+    getPushKey(child){
+        return firebase.database().ref(child).push().key
+    }
+
     writeData(ref,data){
         return firebase.database().ref(ref).set(data)
+    }
+
+    updateData(data){
+        return firebase.database().ref().update(data)
     }
 
     removeData(ref,data){
