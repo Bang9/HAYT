@@ -151,7 +151,10 @@ class API {
             .catch((error) => {
                 callback(true)
                 console.log(`Login fail with error: ${error}`);
-                if(error.code=='auth/user-disabled') return ToastAndroid.show('사용 불가능한 계정입니다', ToastAndroid.SHORT)
+
+                if(error.code=='auth/user-disabled')
+                    return ToastAndroid.show('사용 불가능한 계정입니다', ToastAndroid.SHORT)
+
                 return Alert.alert('에러','관리자에게 문의하세요\n에러코드 : '+error.code+'\n'+error.message)
             });
 

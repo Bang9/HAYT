@@ -66,7 +66,7 @@ class Setting extends Component{
                 () => {
                     let {hour, minute} = this.state.alarm
                     PushAPI.setScheduleNotification({
-                        fire_date: new Date().getTime()+5000,//this.getAlarmTime(hour, minute), //RN's converter is used, accept epoch time and whatever that converter supports
+                        fire_date: this.getAlarmTime(hour, minute), //RN's converter is used, accept epoch time and whatever that converter supports
                         id: "alarm_notification", //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
                         body: "오늘 하루 어떠셨나요?",
                         push_type:'alarm',

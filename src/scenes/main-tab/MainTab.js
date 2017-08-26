@@ -17,9 +17,14 @@ class MainTab extends Component{
             currentHistory:null,
             modalVisible:false,
             comment : "",
+            avatar:"default",
         }
-        this.uid = firebase.auth().currentUser.uid//API.get_uid;
-        this.ref = `users/${this.uid}/currentHistory`
+        this.uid = firebase.auth().currentUser.uid //API.get_uid;
+        this.ref = `users/${this.uid}/currentHistory`;
+        this.avatarList = {
+            'default' : require('../../img/example.gif'),
+            'monkey' : 'url',
+        }
     }
     componentWillMount(){
         API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}));
@@ -35,9 +40,10 @@ class MainTab extends Component{
     render(){
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                {/* Rest of the app comes ABOVE the action button component !*/
+                {/* Background */}
                     <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} />
-                }
+
+                {/* Current emotion history */}
                 <View style={{flex:2,alignSelf:'flex-start',marginTop:10,flexDirection:'row',justifyContent:'flex-start'}}>
                     {
                         /* DONE :: currentHistory structure updated
@@ -84,6 +90,20 @@ class MainTab extends Component{
                     }
                 </View>
 
+                {/* Avatar */}
+                <View style={{flex:8,justifyContent:'center'}}>
+                    <Image
+                        style={{width:150,height:150, borderRadius : 100}}
+                        source={this.avatarList[this.state.avatar]}/>
+                </View>
+
+                {/* Modal */}
+                <CommentModal
+                    modalVisible = {this.state.modalVisible}
+                    closeModal = {()=>this.close_modal()}
+                    onClick = {(diary)=>{this.send_data(diary)}}
+                />
+
                 {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
                 <ActionButton buttonColor="rgba(231,76,60,1)" verticalOrientation="down" position="right" autoInactive={false}>
                     <ActionButton.Item  title="Diary" onPress={()=>this.show_modal()}>
@@ -96,18 +116,6 @@ class MainTab extends Component{
                         <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
                     </ActionButton.Item>
                 </ActionButton>
-
-                <View style={{flex:8,justifyContent:'center'}}>
-                    <Image
-                        style={{width:150,height:150, borderRadius : 100}}
-                        source={require('../../img/example.gif')}/>
-                </View>
-
-                <CommentModal
-                    modalVisible = {this.state.modalVisible}
-                    closeModal = {()=>this.close_modal()}
-                    onClick = {(diary)=>{this.send_data(diary)}}
-                />
             </View>
         )
     }
