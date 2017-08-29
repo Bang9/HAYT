@@ -5,6 +5,7 @@ import API from "../../services/API"
 const {width,height} = Dimensions.get('window');
 import EmotionBar from "../../components/EmotionBar";
 import PressModal from '../../components/PressModal'
+import Button from '../../components/Button'
 
 const timeConverter = (timeStamp)=>{
     let a = new Date(parseInt(timeStamp));
@@ -83,22 +84,22 @@ class History extends Component {
             <View>
                 {
                     this.state.emotionData!=null ?
-                        <FlatList
-                            data = {this.state.listData}
-                            renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
-                                //this._renderRow(item)
-                            {if(item.emotions) return <HistoryRow data={item} showModal={(key)=>this.show_modal(key)}/>}
-                            }
-                            keyExtractor={(item => item.time)}
-                            refreshing={this.state.refreshing}
-                            onRefresh={() => this.onRefresh()}
-                            ListEmptyComponent={ ()=>
-                                <View style={{height:height-60,alignItems: "center",justifyContent:'center'}}>
-                                    <Text style={{fontSize : 20,textAlign:'center'}}>{"Add Your\nEmotion History"}</Text>
-                                </View>}
-                            onEndReached={()=>this.handleData()}
-                            onEndReachedThreshold={0.2}
-                        />
+                            <FlatList
+                                data = {this.state.listData}
+                                renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
+                                    //this._renderRow(item)
+                                {if(item.emotions) return <HistoryRow data={item} showModal={(key)=>this.show_modal(key)}/>}
+                                }
+                                keyExtractor={(item => item.time)}
+                                refreshing={this.state.refreshing}
+                                onRefresh={() => this.onRefresh()}
+                                ListEmptyComponent={ ()=>
+                                    <View style={{height:height-60,alignItems: "center",justifyContent:'center'}}>
+                                        <Text style={{fontSize : 20,textAlign:'center'}}>{"Add Your\nEmotion History"}</Text>
+                                    </View>}
+                                onEndReached={()=>this.handleData()}
+                                onEndReachedThreshold={0.2}
+                            />
                         :
                         <View style={{alignItems:'center',justifyContent:'center',height:height,marginTop:-60}}>
                             <ActivityIndicator size="small" color="#ff8888" />
@@ -110,6 +111,11 @@ class History extends Component {
                     onClick = {()=>this.onRemove()}
                     label = "삭제하기"
                 />
+
+                <Button
+                    title ="그래프"
+                />
+
             </View>
         )
     }

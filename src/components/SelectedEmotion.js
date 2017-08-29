@@ -57,7 +57,7 @@ class SelectedEmotion extends Component {
                 <View style={styles.emotionLevel}>
                     <Slider
                         value={this.state.value}
-                        minimumValue={0}
+                        minimumValue={1}
                         maximumValue={5}
                         step={1}
                         minimumTrackTintColor='#ff8888'
