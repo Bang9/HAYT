@@ -63,7 +63,7 @@ class Record extends Component{
                             type="button"
                         />
                         <EmotionBar
-                            emotions={["만족","지루함","무기력","허탈","초조"]}
+                            emotions={["만족","지루함","무기력","허탈","걱정"]}
                             method={(emotion,check)=>this.toggle_emotion(emotion,check)}
                             ref={(refs)=>this.barRef[1]=refs}
                             type="button"
@@ -106,6 +106,7 @@ class Record extends Component{
                         title="다음"
                         onClick={() => this.show_modal()}
                     />
+
                 </Animated.View>
                 <CommentModal
                     modalVisible = {this.state.modalVisible}
@@ -137,7 +138,7 @@ class Record extends Component{
 
         //같거나 3개 이상이 아니면 새로 추가하고, 버튼 체크
         this.setState({
-            selectedEmotions:this.state.selectedEmotions.concat({emotion:emotion,value:0})
+            selectedEmotions:this.state.selectedEmotions.concat({emotion:emotion,value:1})
         },check())
     }
 
