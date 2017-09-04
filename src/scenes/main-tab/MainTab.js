@@ -40,11 +40,19 @@ class MainTab extends Component{
     render(){
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                {/* Background */}
-                    <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} />
+                {/* Background
+
+                    <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} /> */}
+
+                {/* Avatar */}
+                <View style={{justifyContent:'center'}}>
+                    <Image
+                        style={{width:150,height:150, borderRadius : 100}}
+                        source={this.avatarList[this.state.avatar]}/>
+                </View>
 
                 {/* Current emotion history */}
-                <View style={{flex:2,alignSelf:'flex-start',marginTop:10,flexDirection:'row',justifyContent:'flex-start'}}>
+                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'flex-start'}}>
                     {
                         /* DONE :: currentHistory structure updated
                          * currentHistory = [ {comment, emotions, stamp},{comment,emotions,stamp}, ... ]
@@ -56,45 +64,14 @@ class MainTab extends Component{
                         this.state.currentHistory!==null ?
                             this.state.currentHistory.map( (emotions,i) => {
                                 return(
-                                    <AnimatedCircularProgress
-                                        key={i}
-                                        style={{margin:10}}
-                                        size={60}
-                                        width={6}
-                                        rotation={0}
-                                        friction={8}
-                                        fill={emotions.value * 6.66666667}
-                                        tintColor={'#ff8888'}
-                                        backgroundColor={'#ff888844'}>
-                                        {
-                                            (fill) => (
-                                                <View style={{width:60,height:60,position:'absolute',right:0,left:0,bottom:0,top:0,justifyContent:'center'}}>
-                                                    <View >
-                                                        <Text style={{alignSelf:'center', fontSize:13}}>
-                                                            {emotions.emotion}
-                                                        </Text>
-                                                        <Text style={{alignSelf:'center', fontSize:10}}>
-                                                            {//Math.round(fill/6.66666667)
-                                                                (fill/6.66666667).toFixed(1)
-                                                            }
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                            )
-                                        }
-                                    </AnimatedCircularProgress>
+                                <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
+                                    <Text style={{color:'white'}}>{emotions.emotion}</Text>
+                                </View>
                                 )
                             })
                             :
                             <ActivityIndicator size="small" color="#ff8888" />
                     }
-                </View>
-
-                {/* Avatar */}
-                <View style={{flex:8,justifyContent:'center'}}>
-                    <Image
-                        style={{width:150,height:150, borderRadius : 100}}
-                        source={this.avatarList[this.state.avatar]}/>
                 </View>
 
                 {/* Modal */}
@@ -105,14 +82,14 @@ class MainTab extends Component{
                 />
 
                 {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
-                <ActionButton buttonColor="rgba(231,76,60,1)" verticalOrientation="down" position="right" autoInactive={false}>
-                    <ActionButton.Item  title="Diary" onPress={()=>this.show_modal()}>
+                <ActionButton buttonColor="#FF8A8A" verticalOrientation="down" position="right" autoInactive={false}>
+                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지보내기" onPress={()=>this.show_modal()}>
                         <Icon name="ios-create" style={styles.actionButtonIcon} />
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
+                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터 설정" onPress={() => console.log("notes tapped!")}>
                         <Icon name="md-create" style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => {}}>
+                    </ActionButton.Item> 
+                    <ActionButton.Item buttonColor='#3ED6AE' title="친구목록" onPress={() => {}}>
                         <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
                     </ActionButton.Item>
                 </ActionButton>
