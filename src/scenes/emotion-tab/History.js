@@ -50,7 +50,7 @@ class History extends Component {
     //!FIXME :: once -> on ?
     onRefresh(){
         this.setState({refreshing:true})
-        let uid = API.get_uid();
+        let uid = API.getUid();
         let ref = `users/${uid}/history`
         API.getDataOnce(ref)
             .then( (data) => {
@@ -129,7 +129,7 @@ class History extends Component {
     }
 
     onRemove(){
-        let uid = API.get_uid();
+        let uid = API.getUid();
         let ref = `users/${uid}/history`
         API.removeData(ref,this.state.selectedData);
         this.setState({modalVisible:false},()=>this.onRefresh())

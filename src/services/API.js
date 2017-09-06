@@ -76,11 +76,12 @@ class API {
             email : result.email || 'none',
             photoURL : result.photoURL || 'none',
             uid : result.uid
-        }
-        AsyncStorage.setItem('@Session:authType',authType)
-        AsyncStorage.setItem('@Session:userConfig',JSON.stringify(userConfig))
-        console.log("SET USER CONFIG")
+        };
+        AsyncStorage.setItem('@Session:authType',authType);
+        AsyncStorage.setItem('@Session:userConfig',JSON.stringify(userConfig));
+        console.log("SET USER CONFIG");
         return firebase.database().ref(`users/${result.uid}`).update({
+            avatar:'default',
             authType:authType,
             userConfig:userConfig
         })
@@ -166,7 +167,7 @@ class API {
         AsyncStorage.removeItem('@Session:authType')
         AsyncStorage.removeItem('@Session:userConfig')
     }
-    get_uid(){
+    getUid(){
         return firebase.auth().currentUser.uid
     }
 

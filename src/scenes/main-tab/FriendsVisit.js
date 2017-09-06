@@ -1,27 +1,25 @@
 import React, {Component} from "react";
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View,StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback, ToastAndroid,Alert, AsyncStorage} from "react-native";
-
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View,
+    StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback, ToastAndroid,Alert} from "react-native";
 import {Actions} from 'react-native-router-flux';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Modal from 'react-native-modal';
-
+import {AnimatedCircularProgress} from 'react-native-circular-progress'
 import API from '../../services/API'
 import firebase from'../../commons/Firebase'
+import Modal from 'react-native-modal'
 const {width,height} = Dimensions.get('window');
 
-class MainTab extends Component{
+class FriendsVisit extends Component{
     constructor(props){
         super(props);
         this.state={
-            newMessage:null,
             currentHistory:null,
             modalVisible:false,
-            comment : "",
             avatar:"default",
             avatarEmotion:'보통',
         }
-        this.uid = firebase.auth().currentUser.uid //API.getUid;
+        this.uid = this.props.friendsUid;
         this.avatarList = {
             //this will be list of character x emotion (5*15 = 75)
             'default_행복' : require('../../img/example.gif'),
@@ -65,7 +63,7 @@ class MainTab extends Component{
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                 {/* Background
-                    <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} /> */}
+                 <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} /> */}
 
                 {/* Avatar */}
                 <View style={{justifyContent:'center'}}>
@@ -87,9 +85,9 @@ class MainTab extends Component{
                         this.state.currentHistory!==null ?
                             this.state.currentHistory.map( (emotions,i) => {
                                 return(
-                                <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
-                                    <Text style={{color:'white'}}>{emotions.emotion}</Text>
-                                </View>
+                                    <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
+                                        <Text style={{color:'white'}}>{emotions.emotion}</Text>
+                                    </View>
                                 )
                             })
                             :
@@ -104,31 +102,10 @@ class MainTab extends Component{
                     onClick = {(diary)=>{this.send_data(diary)}}
                 />
 
-                {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
-                <ActionButton buttonColor="#FF8A8A" verticalOrientation="down" position="right" autoInactive={false}>
-                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지보내기" onPress={()=>this.show_modal()}>
-                        <Icon name="md-send" style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터 설정" onPress={() => console.log("notes tapped!")}>
-                        <Icon name="md-paw" style={styles.actionButtonIcon} />
-                    </ActionButton.Item> 
-                    <ActionButton.Item buttonColor='#3ED6AE' title="친구목록" onPress={() => this.checkContactSync()}>
-                        <Icon name="md-contacts" style={styles.actionButtonIcon} />
-                    </ActionButton.Item>
-                </ActionButton>
             </View>
         )
     }
 
-    async checkContactSync(){
-        const contactSetting = await AsyncStorage.getItem('@Setting:contacts')
-        if(contactSetting){
-            Actions.friends()
-        }
-        else{
-            Alert.alert('알림','설정에서 연락처를 동기화 해주세요')
-        }
-    }
     changeAvatar(){
 
     }
@@ -158,7 +135,7 @@ class MainTab extends Component{
     }
 }
 
-export default MainTab;
+export default FriendsVisit;
 
 const styles = StyleSheet.create({
     actionButtonIcon: {

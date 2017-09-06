@@ -8,8 +8,10 @@ import SplashScreen from 'react-native-splash-screen'
 
 //scenes
 import Login from "./main-login/Login";
-import Main from "./main-tab/Main";
 import SignUp from "./main-login/SignUp"
+import Main from "./main-tab/Main";
+import FriendsList from "./main-tab/FriendsList"
+import FriendsVisit from "./main-tab/FriendsVisit"
 import StorageControl from "./setting-detail/StorageControl";
 
 //services
@@ -92,12 +94,13 @@ class App extends Component {
 
         return(
             <Router navigationBarStyle={styles.navBar}
-                    sceneStyle = {styles.scene}
                     titleStyle={styles.title}
                     createReducer={(params)=>this.reducerCreate(params)}
                     backAndroidHandler={()=>this.onBackHandler()} >
 
                 <Scene key="root">
+
+                    {/* Sign */}
                     <Scene
                         key="login"
                         component={Login}
@@ -105,7 +108,15 @@ class App extends Component {
                         sceneStyle ={{marginTop:0}}
                         initial={!this.state.authState}
                     />
+                    <Scene
+                        key="signup"
+                        component={SignUp}
+                        hideNavBar={false}
+                        title="회원가입"
+                        renderBackButton={()=>this.backButton()}
+                    />
 
+                    {/* Main */}
                     <Scene
                         key="main"
                         component={Main}
@@ -115,16 +126,26 @@ class App extends Component {
                         panHandlers={null} // this prop handling gesture
                         initial={this.state.authState}
                     />
-
                     <Scene
-                        key="signup"
-                        component={SignUp}
+                        sceneStyle = {styles.scene}
+                        key="friends"
+                        component={FriendsList}
+                        title="친구목록"
                         hideNavBar={false}
-                        title="회원가입"
+                        renderBackButton={()=>this.backButton()}
+                    />
+                    <Scene
+                        sceneStyle = {styles.scene}
+                        key="visit"
+                        component={FriendsVisit}
+                        getTitle={(props)=>props.title}
+                        hideNavBar={false}
                         renderBackButton={()=>this.backButton()}
                     />
 
+                    {/*Settings*/}
                     <Scene
+                        sceneStyle = {styles.scene}
                         key="storage"
                         component={StorageControl}
                         title="Storage Control"
@@ -196,7 +217,7 @@ class App extends Component {
 
 const styles = StyleSheet.create({
     navBar:{
-        backgroundColor : global.mainColor,
+        backgroundColor : '#ff8888',
         borderBottomColor:'#ffffff00'
     },
     welcome: {
@@ -207,7 +228,7 @@ const styles = StyleSheet.create({
     },
     scene: {
         flex :1,
-        //marginTop : (Platform.OS === 'ios') ? 64 : 54
+        marginTop : (Platform.OS === 'ios') ? 64 : 54
     },
     title: {
         fontSize: 17,
