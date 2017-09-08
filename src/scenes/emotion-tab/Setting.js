@@ -80,6 +80,8 @@ class Setting extends Component{
                         id: "alarm_notification", //REQUIRED! this is what you use to lookup and delete notification. In android notification with same ID will override each other
                         body: "오늘 하루 어떠셨나요?",
                         push_type:'alarm',
+                        large_icon:'ic_launcher',
+                        icon:'ic_stat_ic_notification',
                         repeat_interval: "day" // minute,hour,day,week
                     })
                     AsyncStorage.setItem("@Setting:alarm", JSON.stringify({hour: hour, minute: minute, isSet: true}))
@@ -414,7 +416,7 @@ class Setting extends Component{
                                     vibrate: 300,
                                     show_in_foreground:true,
                                     large_icon:'ic_launcher', //large icon null => none  this wiil be app icon
-                                    icon:'ic_launcher', //icon null=>ic_launcher inthe mipmap  this will be white small icon
+                                    icon:'ic_stat_ic_notification', //icon null=>ic_launcher inthe mipmap  this will be white small icon
                                     priority: "high", // as FCM payload, you can relace this with custom icon you put in mipmap
                                 })}>
                                 <View style={styles.settingButton}>

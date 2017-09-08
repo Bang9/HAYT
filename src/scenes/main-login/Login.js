@@ -28,18 +28,7 @@ class Login extends Component {
         const iconID = require('../../img/inputEmail.png');
         const iconPWD = require('../../img/inputPwd.png');
 
-        const mainView = (
-            <View style={[styles.loginContainer,{marginTop:80}]}>
-                <Button title="이메일로 로그인" color={'#ff8888'}
-                        buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.setState({loginType:'email'})}}/>
-                <Button title="페이스북" color={'#6d84b4'}
-                        buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.login_social('facebook')}}/>
-                <Button title="카카오톡" color={'#fcd411'}
-                        buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.login_social('kakao')}}/>
-            </View>
-        )
-
-        const emailView = (
+        const loginView=(
             <View style={styles.loginContainer}>
                 <View style={styles.inputBox}>
                     <Image
@@ -85,12 +74,10 @@ class Login extends Component {
                 <Button title="로그인" color={'#ff8888'}
                         buttonStyle={{margin:10,width: width * .8}}
                         onClick={() =>this.login_email()}/>
-                <Button title="뒤로가기" color={'#fff'} titleStyle={{color:'#ff8888'}}
-                        buttonStyle={{borderColor:'#ff8888',borderWidth:1,margin:10,width: width * .8}}
-                        onClick={() =>{this.setState({loginType:'none'})}}/>
+                <Button title="페이스북" color={'#6d84b4'}
+                        buttonStyle={{margin:10,width: width * .8}} onClick={() =>{this.login_social('facebook')}}/>
             </View>
         )
-        const renderView = this.state.loginType=='email' ? emailView : mainView
 
         return (
             <ScrollView>
@@ -101,7 +88,7 @@ class Login extends Component {
                         source={require('../../img/logo.png')}
                     />
                 </View>
-                {renderView}
+                {loginView}
                 <Spinner visible={this.state.showSpinner}/>
             </ScrollView>
         )

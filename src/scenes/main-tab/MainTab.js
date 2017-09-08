@@ -15,7 +15,7 @@ class MainTab extends Component{
         super(props);
         this.state={
             newMessage:null,
-            currentHistory:null,
+            currentHistory:'loading',
             modalVisible:false,
             comment : "",
             avatar:"default",
@@ -46,7 +46,11 @@ class MainTab extends Component{
         this.avatarRef = `users/${this.uid}/avatar`;
     }
     componentWillMount(){
-        API.getDataOn(this.historyRef, (snapshot)=>this.setState({currentHistory:snapshot.val(), avatarEmotion:snapshot.val()[0].emotion}));
+        API.getDataOn(this.historyRef, (snapshot)=>{
+            if(snapshot.val())
+                return this.setState({currentHistory:snapshot.val(), avatarEmotion:snapshot.val()[0].emotion})
+            return this.setState({currentHistory:null})
+        });
         API.getDataOn(this.avatarRef, (snapshot)=>this.setState({avatar:snapshot.val()}));
     }
 
@@ -65,7 +69,7 @@ class MainTab extends Component{
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
                 {/* Background
-                    <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} /> */}
+                 <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} /> */}
 
                 {/* Avatar */}
                 <View style={{justifyContent:'center'}}>
@@ -84,16 +88,19 @@ class MainTab extends Component{
                          * => this.state.currentHistory.map( (emotions,i) => {...} ) // emotions = {emotion:'감정',value:'0-5'}
                          */
                         // FIXME :: Render using flatlist more suitable
-                        this.state.currentHistory!==null ?
-                            this.state.currentHistory.map( (emotions,i) => {
-                                return(
-                                <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
-                                    <Text style={{color:'white'}}>{emotions.emotion}</Text>
-                                </View>
-                                )
-                            })
+                        this.state.currentHistory===null ?
+                            <Text>입력된 감정이 아직 없어요!</Text>
                             :
-                            <ActivityIndicator size="small" color="#ff8888" />
+                            this.state.currentHistory==='loading' ?
+                                <ActivityIndicator size="small" color="#ff8888" />
+                                :
+                                this.state.currentHistory.map( (emotions,i) => {
+                                    return(
+                                        <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
+                                            <Text style={{color:'white'}}>{emotions.emotion}</Text>
+                                        </View>
+                                    )
+                                })
                     }
                 </View>
 
@@ -104,16 +111,34 @@ class MainTab extends Component{
                     onClick = {(diary)=>{this.send_data(diary)}}
                 />
 
+                {/* RightButton */}
+                <TouchableOpacity
+                    style={{position:'absolute', right:0,width: 25, height: 25,}}
+                    onPress={()=>this.props.parent.goToPage(1) }>
+                    <Image
+                        style={{width:25,height:25,position:'absolute',right:10,tintColor:'#ff8888' }}
+                        source={require('../../img/goButton.png')}/>
+                    <Image
+                        style={{width:25,height:25,position:'absolute',right:5 ,tintColor:'#ff8888'}}
+                        source={require('../../img/goButton.png')}/>
+                </TouchableOpacity>
+
                 {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
                 <ActionButton buttonColor="#FF8A8A" verticalOrientation="down" position="right" autoInactive={false}>
-                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지보내기" onPress={()=>this.show_modal()}>
-                        <Icon name="md-send" style={styles.actionButtonIcon} />
+                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지" onPress={()=>this.show_modal()}>
+                        <Image
+                            style={styles.actionButtonIcon}
+                            source={require('../../img/fab_message.png')}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터 설정" onPress={() => console.log("notes tapped!")}>
-                        <Icon name="md-paw" style={styles.actionButtonIcon} />
-                    </ActionButton.Item> 
-                    <ActionButton.Item buttonColor='#3ED6AE' title="친구목록" onPress={() => this.checkContactSync()}>
-                        <Icon name="md-contacts" style={styles.actionButtonIcon} />
+                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터" onPress={() => console.log("notes tapped!")}>
+                        <Image
+                            style={styles.actionButtonIcon}
+                            source={require('../../img/fab_avatar.png')}/>
+                    </ActionButton.Item>
+                    <ActionButton.Item buttonColor='#3ED6AE' title="방문" onPress={() => this.checkContactSync()}>
+                        <Image
+                            style={styles.actionButtonIcon}
+                            source={require('../../img/fab_visit.png')}/>
                     </ActionButton.Item>
                 </ActionButton>
             </View>
@@ -161,10 +186,10 @@ class MainTab extends Component{
 export default MainTab;
 
 const styles = StyleSheet.create({
-    actionButtonIcon: {
-        fontSize: 20,
-        height: 22,
-        color: 'white',
+    actionButtonIcon:{
+        tintColor:'white',
+        width:30,
+        height:30
     },
     backgroundImage: {
         flex:1,

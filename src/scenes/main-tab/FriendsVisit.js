@@ -14,7 +14,7 @@ class FriendsVisit extends Component{
     constructor(props){
         super(props);
         this.state={
-            currentHistory:null,
+            currentHistory:'loading',
             modalVisible:false,
             avatar:"default",
             avatarEmotion:'보통',
@@ -44,7 +44,11 @@ class FriendsVisit extends Component{
         this.avatarRef = `users/${this.uid}/avatar`;
     }
     componentWillMount(){
-        API.getDataOn(this.historyRef, (snapshot)=>this.setState({currentHistory:snapshot.val(), avatarEmotion:snapshot.val()[0].emotion}));
+        API.getDataOn(this.historyRef, (snapshot)=>{
+            if(snapshot.val())
+                return this.setState({currentHistory:snapshot.val(), avatarEmotion:snapshot.val()[0].emotion})
+            return this.setState({currentHistory:null})
+        });
         API.getDataOn(this.avatarRef, (snapshot)=>this.setState({avatar:snapshot.val()}));
     }
 
@@ -82,16 +86,19 @@ class FriendsVisit extends Component{
                          * => this.state.currentHistory.map( (emotions,i) => {...} ) // emotions = {emotion:'감정',value:'0-5'}
                          */
                         // FIXME :: Render using flatlist more suitable
-                        this.state.currentHistory!==null ?
-                            this.state.currentHistory.map( (emotions,i) => {
-                                return(
-                                    <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
-                                        <Text style={{color:'white'}}>{emotions.emotion}</Text>
-                                    </View>
-                                )
-                            })
+                        this.state.currentHistory===null ?
+                            <Text>입력된 감정이 아직 없어요!</Text>
                             :
-                            <ActivityIndicator size="small" color="#ff8888" />
+                            this.state.currentHistory==='loading' ?
+                                <ActivityIndicator size="small" color="#ff8888" />
+                                :
+                                this.state.currentHistory.map( (emotions,i) => {
+                                    return(
+                                        <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
+                                            <Text style={{color:'white'}}>{emotions.emotion}</Text>
+                                        </View>
+                                    )
+                                })
                     }
                 </View>
 

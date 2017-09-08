@@ -55,23 +55,23 @@ class PushAPI {
                         //Do Action
                         return alert('OPEN PUSH, ACTION')
                     }
-                    if (!msg.local_notification) { // when app is fore ground remote->local
-                        return firebase.messaging().createLocalNotification({
-                            title: msg.fcm.title,
-                            body: msg.fcm.body,
-                            large_icon: "ic_launcher",   // Android only
-                            icon: "ic_launcher",          // as FCM payload, you can relace this with custom icon you put in mipmap
-                            vibrate: 300,
-                            show_in_foreground: true,
-                            priority: "high",
-                        });
-                    }
+                    // if (!msg.local_notification) { // when app is fore ground remote->local
+                    //     return firebase.messaging().createLocalNotification({
+                    //         title: msg.fcm.title,
+                    //         body: msg.fcm.body,
+                    //         large_icon: "ic_launcher",   // Android only
+                    //         icon: "ic_launcher",          // as FCM payload, you can relace this with custom icon you put in mipmap
+                    //         vibrate: 300,
+                    //         show_in_foreground: true,
+                    //         priority: "high",
+                    //     });
+                    // }
                     if (msg.id === 'alarm_notification') { //푸시 foreground에서 받을때 foreground에 표시
                         return firebase.messaging().createLocalNotification({
                             title:msg.title,//msg.title,
                             body: msg.body,
                             large_icon: "ic_launcher",   // Android only
-                            icon: "ic_launcher",          // as FCM payload, you can relace this with custom icon you put in mipmap
+                            icon: "ic_stat_ic_notification",          // as FCM payload, you can relace this with custom icon you put in mipmap
                             vibrate: 300,
                             show_in_foreground: true,
                             priority: "high",

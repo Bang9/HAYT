@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View,Text,Dimensions} from "react-native";
+import {View,Text,Dimensions,TouchableOpacity,Image} from "react-native";
 
 import {Actions} from "react-native-router-flux";
 import ScrollableTabView from "react-native-scrollable-tab-view";
@@ -18,6 +18,9 @@ class Main extends Component {
     componentWillMount(){
     }
 
+    componentDidMount(){
+    }
+
     render(){
         return(
             <View style={{flexDirection: "column", flex:1,}}>
@@ -29,13 +32,19 @@ class Main extends Component {
                     tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
                     tabBarActiveTextColor={global.mainColor}
                     tabBarInactiveTextColor='#bdbdbd'
-                    initialPage={0}>
+                    initialPage={0}
+                    ref={(tabView)=>this.tabView = tabView}>
 
-                    <MainTab tabLabel="메인"/>
+                    <MainTab tabLabel="메인" parent={this}/>
                     <EmotionTab tabLabel="기록"/>
                 </ScrollableTabView>
+
             </View>
         )
+    }
+
+    goToPage(index){
+        this.tabView.goToPage(index);
     }
 
     componentDidMount(){
