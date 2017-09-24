@@ -6,7 +6,9 @@ const {width,height} = Dimensions.get('window');
 import EmotionBar from "../../components/EmotionBar";
 import PressModal from '../../components/PressModal'
 import Button from '../../components/Button'
-
+import ActionButton from 'react-native-action-button';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
 const timeConverter = (timeStamp)=>{
     let a = new Date(parseInt(timeStamp));
 
@@ -81,9 +83,10 @@ class History extends Component {
 
     render(){
         return(
-            <View>
-                {
-                    this.state.emotionData!=null ?
+            <View style={{height:height-60}}>
+                <View>
+                    {
+                        this.state.emotionData!=null ?
                             <FlatList
                                 data = {this.state.listData}
                                 renderItem = { ({item,index})=> // renderItem return obj{item,index,sperator}
@@ -100,20 +103,26 @@ class History extends Component {
                                 onEndReached={()=>this.handleData()}
                                 onEndReachedThreshold={0.2}
                             />
-                        :
-                        <View style={{alignItems:'center',justifyContent:'center',height:height,marginTop:-60}}>
-                            <ActivityIndicator size="small" color="#ff8888" />
-                        </View>
-                }
-                <PressModal
-                    modalVisible = {this.state.modalVisible}
-                    onClose = {()=>this.close_modal()}
-                    onClick = {()=>this.onRemove()}
-                    label = "삭제하기"
-                />
+                            :
+                            <View style={{alignItems:'center',justifyContent:'center',height:height,marginTop:-60}}>
+                                <ActivityIndicator size="small" color="#ff8888" />
+                            </View>
+                    }
 
-                <Button
-                    title ="그래프"
+                    <PressModal
+                        modalVisible = {this.state.modalVisible}
+                        onClose = {()=>this.close_modal()}
+                        onClick = {()=>this.onRemove()}
+                        label = "삭제하기"
+                    />
+                </View>
+
+
+                <ActionButton
+                    icon={<Icon name="md-stats" style={{fontSize:30,color:'#fff'}}/>}
+                    buttonColor="rgba(231,76,60,1)"
+                    degrees={0}
+                    onPress={()=>Actions.chart()}
                 />
 
             </View>
