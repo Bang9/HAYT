@@ -19,7 +19,7 @@ class StorageControl extends Component{
     render(){
         return(
             <ScrollView>
-                <View style={{flex:1,justifyContent:'center',alignItems:'center',marginTop:60}}>
+                <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <View style={{alignItems:'center'}}>
                         <TextInput placeholder="key" style={{width:200}} onChangeText={(val)=>this.setState({key:val})}></TextInput>
                         <TextInput placeholder="value" style={{width:200}} onChangeText={(val)=>this.setState({value:val})}></TextInput>

@@ -158,7 +158,7 @@ class Record extends Component{
 
     send_data(letter){
         this.setState({comment:letter,modalVisible:false,},()=> {
-                let uid = API.get_uid();
+                let uid = API.getUid();
                 let ref = `users/${uid}/history/${Date.now()}`;
                 let data = {
                     emotions : this.state.selectedEmotions,

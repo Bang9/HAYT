@@ -1,12 +1,13 @@
 import React, {Component} from "react";
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View,
-    StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback, ToastAndroid,Alert} from "react-native";
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View,StyleSheet,Dimensions,Image, ActivityIndicator,TextInput,TouchableNativeFeedback, ToastAndroid,Alert, AsyncStorage} from "react-native";
+
+import {Actions} from 'react-native-router-flux';
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {AnimatedCircularProgress} from 'react-native-circular-progress'
+import Modal from 'react-native-modal';
+
 import API from '../../services/API'
 import firebase from'../../commons/Firebase'
-import Modal from 'react-native-modal'
 const {width,height} = Dimensions.get('window');
 
 class MainTab extends Component{
@@ -14,20 +15,43 @@ class MainTab extends Component{
         super(props);
         this.state={
             newMessage:null,
-            currentHistory:null,
+            currentHistory:'loading',
             modalVisible:false,
             comment : "",
             avatar:"default",
+            avatarEmotion:'보통',
         }
-        this.uid = firebase.auth().currentUser.uid //API.get_uid;
-        this.ref = `users/${this.uid}/currentHistory`;
+        this.uid = firebase.auth().currentUser.uid //API.getUid;
         this.avatarList = {
-            'default' : require('../../img/example.gif'),
+            //this will be list of character x emotion (5*15 = 75)
+            'default_행복' : require('../../img/example.gif'),
+            'default_설렘' : require('../../img/example.gif'),
+            'default_즐거움' : require('../../img/example.gif'),
+            'default_소소' : require('../../img/example.gif'),
+            'default_평온' : require('../../img/example.gif'),
+            'default_만족' : require('../../img/example.gif'),
+            'default_지루함' : require('../../img/example.gif'),
+            'default_무기력' : require('../../img/example.gif'),
+            'default_허탈' : require('../../img/example.gif'),
+            'default_걱정' : require('../../img/example.gif'),
+            'default_걱정' : require('../../img/example.gif'),
+            'default_우울' : require('../../img/example.gif'),
+            'default_후회' : require('../../img/example.gif'),
+            'default_화남' : require('../../img/example.gif'),
+            'default_불쾌' : require('../../img/example.gif'),
+            'default_짜증' : require('../../img/example.gif'),
             'monkey' : 'url',
         }
+        this.historyRef = `users/${this.uid}/currentHistory`;
+        this.avatarRef = `users/${this.uid}/avatar`;
     }
     componentWillMount(){
-        API.getDataOn(this.ref, (snapshot)=>this.setState({currentHistory:snapshot.val()}));
+        API.getDataOn(this.historyRef, (snapshot)=>{
+            if(snapshot.val())
+                return this.setState({currentHistory:snapshot.val(), avatarEmotion:snapshot.val()[0].emotion})
+            return this.setState({currentHistory:null})
+        });
+        API.getDataOn(this.avatarRef, (snapshot)=>this.setState({avatar:snapshot.val()}));
     }
 
     componentDidMount(){
@@ -35,16 +59,27 @@ class MainTab extends Component{
 
     componentWillUnmount(){
         //FIXME :: ref.remove() occur an error when exit
-        //API.removeDataOn(this.ref)
+        //API.removeDataOn(this.historyRef)
     }
+
     render(){
+        let selectedAvatar = `${this.state.avatar}_${this.state.avatarEmotion}`;
+
+        //const AVATAR = require(`../../img/${this.state.avatar}_${this.state.avatarEmotion}.gif`)
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
-                {/* Background */}
-                    <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} />
+                {/* Background
+                 <Image source={require('../../img/background.jpg')} style={styles.backgroundImage} /> */}
+
+                {/* Avatar */}
+                <View style={{justifyContent:'center'}}>
+                    <Image
+                        style={{width:150,height:150, borderRadius : 100}}
+                        source={this.avatarList[selectedAvatar]}/>
+                </View>
 
                 {/* Current emotion history */}
-                <View style={{flex:2,alignSelf:'flex-start',marginTop:10,flexDirection:'row',justifyContent:'flex-start'}}>
+                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'flex-start'}}>
                     {
                         /* DONE :: currentHistory structure updated
                          * currentHistory = [ {comment, emotions, stamp},{comment,emotions,stamp}, ... ]
@@ -53,48 +88,20 @@ class MainTab extends Component{
                          * => this.state.currentHistory.map( (emotions,i) => {...} ) // emotions = {emotion:'감정',value:'0-5'}
                          */
                         // FIXME :: Render using flatlist more suitable
-                        this.state.currentHistory!==null ?
-                            this.state.currentHistory.map( (emotions,i) => {
-                                return(
-                                    <AnimatedCircularProgress
-                                        key={i}
-                                        style={{margin:10}}
-                                        size={60}
-                                        width={6}
-                                        rotation={0}
-                                        friction={8}
-                                        fill={emotions.value * 6.66666667}
-                                        tintColor={'#ff8888'}
-                                        backgroundColor={'#ff888844'}>
-                                        {
-                                            (fill) => (
-                                                <View style={{width:60,height:60,position:'absolute',right:0,left:0,bottom:0,top:0,justifyContent:'center'}}>
-                                                    <View >
-                                                        <Text style={{alignSelf:'center', fontSize:13}}>
-                                                            {emotions.emotion}
-                                                        </Text>
-                                                        <Text style={{alignSelf:'center', fontSize:10}}>
-                                                            {//Math.round(fill/6.66666667)
-                                                                (fill/6.66666667).toFixed(1)
-                                                            }
-                                                        </Text>
-                                                    </View>
-                                                </View>
-                                            )
-                                        }
-                                    </AnimatedCircularProgress>
-                                )
-                            })
+                        this.state.currentHistory===null ?
+                            <Text>입력된 감정이 아직 없어요!</Text>
                             :
-                            <ActivityIndicator size="small" color="#ff8888" />
+                            this.state.currentHistory==='loading' ?
+                                <ActivityIndicator size="small" color="#ff8888" />
+                                :
+                                this.state.currentHistory.map( (emotions,i) => {
+                                    return(
+                                        <View key={emotions.emotion} style={{height:30,width:60,borderRadius:30, backgroundColor:'#ff8888', alignItems:'center', justifyContent:'center', margin:10}}>
+                                            <Text style={{color:'white'}}>{emotions.emotion}</Text>
+                                        </View>
+                                    )
+                                })
                     }
-                </View>
-
-                {/* Avatar */}
-                <View style={{flex:8,justifyContent:'center'}}>
-                    <Image
-                        style={{width:150,height:150, borderRadius : 100}}
-                        source={this.avatarList[this.state.avatar]}/>
                 </View>
 
                 {/* Modal */}
@@ -104,22 +111,52 @@ class MainTab extends Component{
                     onClick = {(diary)=>{this.send_data(diary)}}
                 />
 
+                {/* RightButton */}
+                <TouchableOpacity
+                    style={{position:'absolute', right:0,width: 25, height: 25,}}
+                    onPress={()=>this.props.parent.goToPage(1) }>
+                    <Image
+                        style={{width:25,height:25,position:'absolute',right:10,tintColor:'#ff8888' }}
+                        source={require('../../img/goButton.png')}/>
+                    <Image
+                        style={{width:25,height:25,position:'absolute',right:5 ,tintColor:'#ff8888'}}
+                        source={require('../../img/goButton.png')}/>
+                </TouchableOpacity>
+
                 {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
-                <ActionButton buttonColor="rgba(231,76,60,1)" verticalOrientation="down" position="right" autoInactive={false}>
-                    <ActionButton.Item  title="Diary" onPress={()=>this.show_modal()}>
-                        <Icon name="ios-create" style={styles.actionButtonIcon} />
+                <ActionButton buttonColor="#FF8A8A" verticalOrientation="down" position="right" autoInactive={false}>
+                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지" onPress={()=>this.show_modal()}>
+                        <Image
+                            style={styles.actionButtonIcon}
+                            source={require('../../img/fab_message.png')}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
-                        <Icon name="md-create" style={styles.actionButtonIcon} />
+                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터" onPress={() => console.log("notes tapped!")}>
+                        <Image
+                            style={styles.actionButtonIcon}
+                            source={require('../../img/fab_avatar.png')}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => {}}>
-                        <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
+                    <ActionButton.Item buttonColor='#3ED6AE' title="방문" onPress={() => this.checkContactSync()}>
+                        <Image
+                            style={styles.actionButtonIcon}
+                            source={require('../../img/fab_visit.png')}/>
                     </ActionButton.Item>
                 </ActionButton>
             </View>
         )
     }
 
+    async checkContactSync(){
+        const contactSetting = await AsyncStorage.getItem('@Setting:contacts')
+        if(contactSetting){
+            Actions.friends()
+        }
+        else{
+            Alert.alert('알림','설정에서 연락처를 동기화 해주세요')
+        }
+    }
+    changeAvatar(){
+
+    }
     show_modal(){
         this.setState({modalVisible:true})
     }
@@ -130,7 +167,6 @@ class MainTab extends Component{
         this.setState({modalVisible:false},()=>ToastAndroid.show('기록되었습니다.',ToastAndroid.SHORT))
     }
     send_data(letter){
-        let uid = API.get_uid();
         let data = {
             timeStamp : Date.now(),
             comment : letter,
@@ -139,7 +175,7 @@ class MainTab extends Component{
         let newPostKey = API.getPushKey('diarys');
         let updates={};
         updates['/diarys/'+newPostKey] = data;
-        updates[`/users/${uid}/diary/${newPostKey}`] = data;
+        updates[`/users/${this.uid}/diary/${newPostKey}`] = data;
 
         return API.updateData(updates)
             .then( ()=>this.resetState() )
@@ -150,10 +186,10 @@ class MainTab extends Component{
 export default MainTab;
 
 const styles = StyleSheet.create({
-    actionButtonIcon: {
-        fontSize: 20,
-        height: 22,
-        color: 'white',
+    actionButtonIcon:{
+        tintColor:'white',
+        width:30,
+        height:30
     },
     backgroundImage: {
         flex:1,
