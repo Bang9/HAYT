@@ -10,6 +10,7 @@ import SplashScreen from 'react-native-splash-screen'
 import Login from "./main-login/Login";
 import Main from "./main-tab/Main";
 import SignUp from "./main-login/SignUp"
+import Chart from "./emotion-tab/Chart"
 import StorageControl from "./setting-detail/StorageControl";
 
 //services
@@ -130,6 +131,13 @@ class App extends Component {
                         title="Storage Control"
                         hideNavBar={false}
                         renderBackButton={()=>this.backButton()}
+                    />
+                    <Scene
+                        key="chart"
+                        component={Chart}
+                        hideNavBar={true}
+                        sceneStyle ={{marginTop:0}}
+                        panHandlers={null}
                     />
                 </Scene>
             </Router>

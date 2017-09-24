@@ -21,12 +21,14 @@ class Button extends Component{
         title : "Button",
         color : "#bfbfbf",
         onClick : null,
+        icon : null,
     }
 
     static propTypes = {
         title : React.PropTypes.string,
         color : React.PropTypes.string,
         onClick : React.PropTypes.func,
+        icon : React.PropTypes.object,
     };
 
     render(){
@@ -35,8 +37,9 @@ class Button extends Component{
                 delayPressIn={0}
                 background={TouchableNativeFeedback.SelectableBackground()}
                 onPress={this.props.onClick}
-                >
-                <View style={[styles.buttonStyle,this.props.buttonStyle,{backgroundColor:this.props.color}]}>
+            >
+                <View style={[styles.buttonStyle,this.props.buttonStyle,{backgroundColor:this.props.color,flexDirection:'row'}]}>
+                    { this.props.icon }
                     <Text style={[styles.fontStyle,this.props.titleStyle]}>{this.props.title}</Text>
                 </View>
             </TouchableNativeFeedback>
@@ -55,6 +58,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     fontStyle:{
-        color:'white'
+        color:'white',
+        paddingHorizontal:5,
     }
 })
