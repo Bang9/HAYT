@@ -38,12 +38,12 @@ class API {
             case'facebook' :
                 return this._fbAuth_Login(callback);
 
+            case'email' :
+                return this._email_Login(data.email,data.password,callback);
+
             case'kakao' :
                 callback(true);
                 break;
-
-            case'email' :
-                return this._email_Login(data.email,data.password,callback);
 
             default :
                 break;
@@ -56,11 +56,11 @@ class API {
                 this._fbAuth_Logout();
                 break;
 
-            case'kakao' :
-                break;
-
             case'email' :
                 this._email_Logout();
+                break;
+
+            case'kakao' :
                 break;
 
             default :
@@ -81,7 +81,6 @@ class API {
         AsyncStorage.setItem('@Session:userConfig',JSON.stringify(userConfig));
         console.log("SET USER CONFIG");
         return firebase.database().ref(`users/${result.uid}`).update({
-            avatar:'default',
             authType:authType,
             userConfig:userConfig
         })

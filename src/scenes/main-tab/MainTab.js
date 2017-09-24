@@ -24,23 +24,21 @@ class MainTab extends Component{
         this.uid = firebase.auth().currentUser.uid //API.getUid;
         this.avatarList = {
             //this will be list of character x emotion (5*15 = 75)
-            'default_행복' : require('../../img/example.gif'),
-            'default_설렘' : require('../../img/example.gif'),
-            'default_즐거움' : require('../../img/example.gif'),
-            'default_소소' : require('../../img/example.gif'),
-            'default_평온' : require('../../img/example.gif'),
-            'default_만족' : require('../../img/example.gif'),
-            'default_지루함' : require('../../img/example.gif'),
-            'default_무기력' : require('../../img/example.gif'),
-            'default_허탈' : require('../../img/example.gif'),
-            'default_걱정' : require('../../img/example.gif'),
-            'default_걱정' : require('../../img/example.gif'),
-            'default_우울' : require('../../img/example.gif'),
-            'default_후회' : require('../../img/example.gif'),
-            'default_화남' : require('../../img/example.gif'),
-            'default_불쾌' : require('../../img/example.gif'),
-            'default_짜증' : require('../../img/example.gif'),
-            'monkey' : 'url',
+            'default_행복' : require('../../img/default_example.gif'),
+            'default_설렘' : require('../../img/default_example.gif'),
+            'default_즐거움' : require('../../img/default_example.gif'),
+            'default_소소' : require('../../img/default_example.gif'),
+            'default_평온' : require('../../img/default_example.gif'),
+            'default_만족' : require('../../img/default_example.gif'),
+            'default_지루함' : require('../../img/default_example.gif'),
+            'default_무기력' : require('../../img/default_example.gif'),
+            'default_허탈' : require('../../img/default_example.gif'),
+            'default_걱정' : require('../../img/default_example.gif'),
+            'default_우울' : require('../../img/default_example.gif'),
+            'default_후회' : require('../../img/default_example.gif'),
+            'default_화남' : require('../../img/default_example.gif'),
+            'default_불쾌' : require('../../img/default_example.gif'),
+            'default_짜증' : require('../../img/default_example.gif'),
         }
         this.historyRef = `users/${this.uid}/currentHistory`;
         this.avatarRef = `users/${this.uid}/avatar`;
@@ -51,20 +49,21 @@ class MainTab extends Component{
                 return this.setState({currentHistory:snapshot.val(), avatarEmotion:snapshot.val()[0].emotion})
             return this.setState({currentHistory:null})
         });
-        API.getDataOn(this.avatarRef, (snapshot)=>this.setState({avatar:snapshot.val()}));
+        API.getDataOn(this.avatarRef, (snapshot)=>{
+            if(snapshot.val())
+                return this.setState({avatar:snapshot.val()})
+        });
     }
 
     componentDidMount(){
     }
 
     componentWillUnmount(){
-        //FIXME :: ref.remove() occur an error when exit
-        //API.removeDataOn(this.historyRef)
+        API.getDataOff()
     }
 
     render(){
         let selectedAvatar = `${this.state.avatar}_${this.state.avatarEmotion}`;
-
         //const AVATAR = require(`../../img/${this.state.avatar}_${this.state.avatarEmotion}.gif`)
         return(
             <View style={{flex:1,alignItems:'center',justifyContent:'center'}}>
@@ -81,13 +80,6 @@ class MainTab extends Component{
                 {/* Current emotion history */}
                 <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'flex-start'}}>
                     {
-                        /* DONE :: currentHistory structure updated
-                         * currentHistory = [ {comment, emotions, stamp},{comment,emotions,stamp}, ... ]
-                         * changed next
-                         * => currentHistory : [ {emotion:'감정',value:'0-5'}, ...]
-                         * => this.state.currentHistory.map( (emotions,i) => {...} ) // emotions = {emotion:'감정',value:'0-5'}
-                         */
-                        // FIXME :: Render using flatlist more suitable
                         this.state.currentHistory===null ?
                             <Text>입력된 감정이 아직 없어요!</Text>
                             :

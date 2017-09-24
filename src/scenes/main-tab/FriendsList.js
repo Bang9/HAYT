@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Alert, Dimensions, FlatList, StyleSheet, Text, View, TouchableOpacity, AsyncStorage} from "react-native";
+import {Alert, Dimensions, FlatList, StyleSheet, Image, Text, View, TouchableOpacity, AsyncStorage} from "react-native";
 
 import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -84,20 +84,49 @@ class FriendsList extends Component {
 }
 
 class FriendRow extends Component {
+    constructor(props){
+        super(props);
+        this.state={
+            photoURL:'none'
+        }
+    }
+    componentWillMount(){
+        this.getProfileURL();
+    }
     render(){
+        const profile_photo = this.state.photoURL=='none' ? require('../../img/default_profile.png') : {uri:this.state.photoURL}
         return(
-            <View >
+            <View>
                 <TouchableOpacity onPress={()=>Actions.visit({friendsUid:this.props.uid, title:this.props.name})}>
-                    <View style={{height:40,backgroundColor:'#f2f2f2',alignItems:'center',margin:5}}>
-                        <View style={{flexDirection:'row'}}>
-                            <Text>{this.props.name}</Text>
-                            <Text>{this.props.phone}</Text>
+                    <View style={styles.profileContainer}>
+                        <Image
+                            style={styles.profilePhoto}
+                            source={profile_photo}
+                        />
+                        <View style={styles.profileUserConfig}>
+                            <Text style={{fontSize:15,color:'#222'}}>{this.props.name}</Text>
+                            <Text style={{fontSize:15,color:'#999'}}>{this.props.phone}</Text>
                         </View>
-                        <Text>{this.props.uid}</Text>
+                        <View style={styles.profileButtonWrapper}>
+                            <Image
+                                style={styles.profileButton}
+                                source={require('../../img/goButton.png')}
+                            />
+                        </View>
                     </View>
                 </TouchableOpacity>
+                <View style={{height:1, marginHorizontal:15, backgroundColor:'#eee'}}/>
             </View>
         )
+    }
+
+    getProfileURL(){
+        let ref = `users/${this.props.uid}/userConfig`
+        API.getDataOnce(ref)
+            .then( (ret) => {
+                let photoURL = ret.val().photoURL;
+                if(photoURL) this.setState({photoURL});
+            })
     }
 }
 
@@ -120,6 +149,38 @@ const styles = StyleSheet.create({
         borderColor:'#dddf',
         borderWidth:0.3,alignItems:'center',
         flexDirection:'row'
+    },
+
+    profileContainer:{
+        flexDirection:'row',
+        paddingHorizontal:20,
+        height:70,
+        //backgroundColor:'#f9f9f9'
+    },
+    profilePhoto:{
+        width:50,
+        height:50,
+        borderRadius:50,
+        alignSelf:'center',
+        borderWidth:0.5,
+        borderColor:'#ccc'
+    },
+    profileUserConfig:{
+        paddingHorizontal:20,
+        alignSelf:'center'
+    },
+    profileButtonWrapper:{
+        justifyContent:'center',
+        alignItems:'center',
+        position:'absolute',
+        right:15,
+        width:30,height:30,
+        alignSelf:'center',
+    },
+    profileButton:{
+        width:20,
+        height:20,
+        tintColor:'#bbb',
     }
 });
 
