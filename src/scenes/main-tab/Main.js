@@ -4,8 +4,8 @@ import {View,Text,Dimensions,TouchableOpacity,Image} from "react-native";
 import {Actions} from "react-native-router-flux";
 import ScrollableTabView from "react-native-scrollable-tab-view";
 import ImageTabBar from "../../components/ImageTabBar";
-import MainTab from "./MainTab";
-import EmotionTab from "./EmotionTab";
+import MainTab from "../index-tab/MainTab";
+import EmotionTab from "../index-tab/EmotionTab";
 import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 

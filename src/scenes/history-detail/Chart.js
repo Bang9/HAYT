@@ -200,7 +200,7 @@ class Chart extends Component {
                                     </Text>
 
                                     <Bar
-                                        style={{height: 100, marginTop: 20}}
+                                        style={{height: 100, marginTop: 20,marginRight:20}}
                                         data={data}
                                         verticalGridStep={1}
                                         type="bar"
@@ -222,7 +222,7 @@ class Chart extends Component {
                 <View style={{width:width, position:"absolute", bottom:0}}>
                     <Button
                         color="#ff8888"
-                        buttonStyle={{width: width, borderRadius:0}}
+                        buttonStyle={{width: width, borderRadius:0,height:50}}
                         title="기간 설정"
                         onClick={()=>this.show_modal()}
                         icon = {<Icon name="md-calendar" style={{fontSize:20,color:'#fff'}}/>}

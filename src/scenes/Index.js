@@ -7,9 +7,9 @@ import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
 import SplashScreen from 'react-native-splash-screen'
 
 //scenes
-import Login from "./main-login/Login";
-import SignUp from "./main-login/SignUp"
-import Chart from "./emotion-tab/Chart"
+import Login from "./index-login/Login";
+import SignUp from "./index-login/SignUp"
+import Chart from "./history-detail/Chart"
 import Main from "./main-tab/Main";
 import FriendsList from "./main-tab/FriendsList"
 import FriendsVisit from "./main-tab/FriendsVisit"
@@ -144,6 +144,14 @@ class App extends Component {
                         renderBackButton={()=>this.backButton()}
                     />
 
+                    {/*History*/}
+                    <Scene
+                        key="chart"
+                        component={Chart}
+                        hideNavBar={true}
+                        sceneStyle ={{marginTop:0}}
+                    />
+
                     {/*Settings*/}
                     <Scene
                         sceneStyle = {styles.scene}
@@ -152,13 +160,6 @@ class App extends Component {
                         title="Storage Control"
                         hideNavBar={false}
                         renderBackButton={()=>this.backButton()}
-                    />
-                    <Scene
-                        key="chart"
-                        component={Chart}
-                        hideNavBar={true}
-                        sceneStyle ={{marginTop:0}}
-                        panHandlers={null}
                     />
                 </Scene>
             </Router>

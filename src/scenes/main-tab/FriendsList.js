@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Alert, Dimensions, FlatList, StyleSheet, Image, Text, View, TouchableOpacity, AsyncStorage} from "react-native";
+import {Alert, Dimensions, FlatList, StyleSheet, Image, Text, View, TouchableOpacity, AsyncStorage, TextInput} from "react-native";
 
 import {Actions} from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -32,9 +32,7 @@ class FriendsList extends Component {
                 style={{width:30}}>
                 <Icon name="md-refresh" style={{
                     fontSize: 25,
-                    height: 22,
                     color: 'white'}}/>
-                <Text style={{color:'white', fontSize:16, textAlign:'right'}}></Text>
             </TouchableOpacity>
         );
     }
@@ -61,19 +59,52 @@ class FriendsList extends Component {
         this.setState({showSpinner:true})
         let uid = API.getUid();
         let ref = `users/${uid}/friends`;
+
         API.getDataOn(ref,(snapshot)=>{
-            this.setState({friends:snapshot.val(), showSpinner:false})
+            if(snapshot) {
+                this.setState({friends: snapshot.val(), showSpinner: false});
+                let friends = [];
+                snapshot.val().some((friend) => {
+                    API.getDataOnce(`users/${friend.uid}/userConfig/photoURL`)
+                        .then((data) => {
+                            if (data.val()) {
+                                friend.photoURL = data.val();
+                                friends.push(friend);
+                            }
+                        })
+                })
+                this.friends = friends;
+            }
         });
+    }
+
+    filtering(text){
+        let friendsList = this.friends.slice();
+        friendsList = friendsList.filter( (friend) => {return friend.name.toLowerCase().indexOf(text)>-1})
+        console.log("FILTER",friendsList)
+        this.setState({friends:friendsList})
     }
 
     render() {
         return (
             <View>
+                <View style={{borderWidth:1,marginHorizontal:10,marginVertical:5, borderRadius:12,borderColor:'#ccc', height:40, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+                    <Icon name="md-search" style={{
+                        fontSize: 25,
+                        marginLeft:10,
+                        color: '#ccc'}}/>
+                    <TextInput
+                        underlineColorAndroid={"#ffffffff"}
+                        style={{width:width-50,alignSelf:'center'}}
+                        placeholder={"검색"}
+                        onChangeText={(text)=>this.filtering(text) }
+                    />
+                </View>
                 <FlatList
                     data={this.state.friends}
                     renderItem={ ({item,index}) =>
                         <FriendRow
-                            name={item.name} phone={item.phone} uid={item.uid}
+                            name={item.name} phone={item.phone} uid={item.uid} photoURL={ item.photoURL ? item.photoURL:'none'}
                         />  }
                     keyExtractor={item => item.uid} // keyExtractor -> inform each of items primary key
                 />
@@ -86,13 +117,17 @@ class FriendsList extends Component {
 class FriendRow extends Component {
     constructor(props){
         super(props);
-        this.state={
-            photoURL:'none'
+        this.state= {
+            photoURL: this.props.photoURL
         }
     }
     componentWillMount(){
         this.getProfileURL();
     }
+    componentWillReceiveProps(nextProps){
+        //console.log('row get nextProps',nextProps)
+    }
+
     render(){
         const profile_photo = this.state.photoURL=='none' ? require('../../img/default_profile.png') : {uri:this.state.photoURL}
         return(
@@ -121,12 +156,17 @@ class FriendRow extends Component {
     }
 
     getProfileURL(){
-        let ref = `users/${this.props.uid}/userConfig`
-        API.getDataOnce(ref)
-            .then( (ret) => {
-                let photoURL = ret.val().photoURL;
-                if(photoURL) this.setState({photoURL});
-            })
+        console.log('GET PHOTO URL',this.props)
+        if(this.props.photoURL=='none') {
+            let ref = `users/${this.props.uid}/userConfig`
+            API.getDataOnce(ref)
+                .then((ret) => {
+                    let photoURL = ret.val().photoURL;
+                    if (photoURL) this.setState({photoURL});
+                })
+        } else {
+            this.setState({photoURL:this.props.photoURL});
+        }
     }
 }
 

@@ -120,7 +120,7 @@ class History extends Component {
 
                 <ActionButton
                     icon={<Icon name="md-stats" style={{fontSize:30,color:'#fff'}}/>}
-                    buttonColor="rgba(231,76,60,1)"
+                    buttonColor="#64B5F6"
                     degrees={0}
                     onPress={()=>Actions.chart()}
                 />
