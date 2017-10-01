@@ -25,8 +25,8 @@ class Login extends Component {
     }
 
     render() {
-        const iconID = require('../../img/inputEmail.png');
-        const iconPWD = require('../../img/inputPwd.png');
+        const iconID = require('../../img/icon_email.png');
+        const iconPWD = require('../../img/icon_pwd.png');
 
         const loginView=(
             <View style={styles.loginContainer}>

@@ -351,7 +351,7 @@ class Setting extends Component{
                                 <View style={styles.profileButtonWrapper}>
                                     <Image
                                         style={styles.profileButton}
-                                        source={require('../../img/goButton.png')}
+                                        source={require('../../img/icon_go.png')}
                                     />
                                 </View>
                             </TouchableOpacity>

@@ -23,21 +23,21 @@ class FriendsVisit extends Component{
         this.uid = this.props.friendsUid;
         this.avatarList = {
             //this will be list of character x emotion (5*15 = 75)
-            'default_행복' : require('../../img/default_example.gif'),
-            'default_설렘' : require('../../img/default_example.gif'),
-            'default_즐거움' : require('../../img/default_example.gif'),
-            'default_소소' : require('../../img/default_example.gif'),
-            'default_평온' : require('../../img/default_example.gif'),
-            'default_만족' : require('../../img/default_example.gif'),
-            'default_지루함' : require('../../img/default_example.gif'),
-            'default_무기력' : require('../../img/default_example.gif'),
-            'default_허탈' : require('../../img/default_example.gif'),
-            'default_걱정' : require('../../img/default_example.gif'),
-            'default_우울' : require('../../img/default_example.gif'),
-            'default_후회' : require('../../img/default_example.gif'),
-            'default_화남' : require('../../img/default_example.gif'),
-            'default_불쾌' : require('../../img/default_example.gif'),
-            'default_짜증' : require('../../img/default_example.gif'),
+            'default_행복' : require('../../img/rabbit_good.gif'),
+            'default_설렘' : require('../../img/rabbit_good.gif'),
+            'default_즐거움' : require('../../img/rabbit_good.gif'),
+            'default_만족' : require('../../img/rabbit_good.gif'),
+            'default_소소' : require('../../img/rabbit_soso.gif'),
+            'default_평온' : require('../../img/rabbit_soso.gif'),
+            'default_지루함' : require('../../img/rabbit_bad.gif'),
+            'default_무기력' : require('../../img/rabbit_bad.gif'),
+            'default_허탈' : require('../../img/rabbit_bad.gif'),
+            'default_걱정' : require('../../img/rabbit_bad.gif'),
+            'default_우울' : require('../../img/rabbit_sad.gif'),
+            'default_후회' : require('../../img/rabbit_sad.gif'),
+            'default_화남' : require('../../img/rabbit_angry.gif'),
+            'default_불쾌' : require('../../img/rabbit_angry.gif'),
+            'default_짜증' : require('../../img/rabbit_angry.gif'),
         }
         this.historyRef = `users/${this.uid}/currentHistory`;
         this.avatarRef = `users/${this.uid}/avatar`;

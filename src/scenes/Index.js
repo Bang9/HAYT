@@ -173,7 +173,7 @@ class App extends Component {
                 style={{}}>
                 <Image
                     style={{width:25,height:25,}}
-                    source={require('../img/backButton.png')}
+                    source={require('../img/icon_back.png')}
                     resizeMode={Image.resizeMode.contain}
                 />
             </TouchableOpacity>
