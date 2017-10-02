@@ -10,7 +10,7 @@ export default class PressModal extends Component {
     render() {
         return (
             <Modal
-                animationType={"fade"}
+                animationType={"none"}
                 transparent={true}
                 visible={this.props.modalVisible}
                 onRequestClose={()=>this.props.onClose()}>

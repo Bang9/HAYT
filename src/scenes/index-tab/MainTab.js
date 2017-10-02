@@ -73,7 +73,7 @@ class MainTab extends Component{
                 {/* Avatar */}
                 <View style={{justifyContent:'center'}}>
                     <Image
-                        style={{width:150,height:150, borderRadius : 100}}
+                        style={{width:200,height:200, borderRadius : 100}}
                         source={this.avatarList[selectedAvatar]}/>
                 </View>
 

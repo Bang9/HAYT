@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View, Alert} from "react-native";
 import Dates from 'react-native-dates';
 import moment from 'moment';
 const { width, height } = Dimensions.get('window');
@@ -64,14 +64,14 @@ export default class DateModal extends Component {
                                     '#cccccc'
                                 }
                                 title ="설정"
-                                buttonStyle={{width:width-50,borderRadius:0}}
+                                buttonStyle={{width:width-50,height:50,borderRadius:0}}
                                 onClick={
                                     ()=> {
                                         if(this.state.endDate&&this.state.startDate)
                                             if(this.state.startDate._d.getTime() == this.state.endDate._d.getTime()){
-                                                alert("기간은 2일이상 설정해주세요.")
+                                                Alert.alert('알림',"기간은 2일이상 설정해주세요.")
                                             }else {
-                                                this.props.dateSetting(this.state.startDate, this.state.endDate)
+                                                this.props.dateSetting(this.state.startDate, moment(this.state.endDate._d.getTime()+86399000,'x'))
                                             }
                                     }
                                 }/>

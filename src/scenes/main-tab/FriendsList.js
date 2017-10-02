@@ -14,6 +14,7 @@ class FriendsList extends Component {
         this.state = {
             friends:[],
             showSpinner: false,
+            inputValue:'',
         }
     }
 
@@ -79,6 +80,7 @@ class FriendsList extends Component {
     }
 
     filtering(text){
+        this.setState({inputValue:text})
         let friendsList = this.friends.slice();
         friendsList = friendsList.filter( (friend) => {return friend.name.toLowerCase().indexOf(text)>-1})
         console.log("FILTER",friendsList)
@@ -95,10 +97,14 @@ class FriendsList extends Component {
                         color: '#ccc'}}/>
                     <TextInput
                         underlineColorAndroid={"#ffffffff"}
-                        style={{width:width-50,alignSelf:'center'}}
+                        style={{width:width-90,alignSelf:'center'}}
                         placeholder={"검색"}
                         onChangeText={(text)=>this.filtering(text) }
+                        value={this.state.inputValue}
                     />
+                    <TouchableOpacity style={{width:30,height:30,marginRight:0,justifyContent:'center'}} onPress={()=>this.setState({inputValue:''},()=>this.filtering(''))}>
+                        <Icon name="md-add-circle" style={{fontSize:25,color:'#ccc', transform: [{rotate: '45deg'}], alignSelf:'center'}}/>
+                    </TouchableOpacity>
                 </View>
                 <FlatList
                     data={this.state.friends}

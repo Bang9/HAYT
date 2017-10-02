@@ -52,11 +52,11 @@ class Chart extends Component {
     sortData(allData){
         this.setState({
                 emotionCount:{'행복':0,'설렘':0,'즐거움':0,'소소':0,'평온':0,
-                '만족':0,'지루함':0,'무기력':0,'허탈':0,'걱정':0,
-                '우울':0,'후회':0,'화남':0,'불쾌':0,'짜증':0,},
+                    '만족':0,'지루함':0,'무기력':0,'허탈':0,'걱정':0,
+                    '우울':0,'후회':0,'화남':0,'불쾌':0,'짜증':0,},
                 emotionScore:{'행복':0,'설렘':0,'즐거움':0,'소소':0,'평온':0,
-                '만족':0,'지루함':0,'무기력':0,'허탈':0,'걱정':0,
-                '우울':0,'후회':0,'화남':0,'불쾌':0,'짜증':0,}},
+                    '만족':0,'지루함':0,'무기력':0,'허탈':0,'걱정':0,
+                    '우울':0,'후회':0,'화남':0,'불쾌':0,'짜증':0,}},
             ()=>{
                 let {emotionScore, emotionCount,emotions} = this.state;
                 console.log('INIT STATE',this.initialState)
@@ -104,19 +104,17 @@ class Chart extends Component {
             console.log("start : ", start + " / " + end)
             return firebase.database().ref(`users/${this.uid}/history`)
                 .orderByKey().startAt(`${start}`).endAt(`${end}`).once()
-                .then(
-                    (snapshot) => {
+                .then((snapshot) => {
                         let data = snapshot.val()
                         let keys = Object.keys(data)
                         let allData = []
                         for (i in keys)
                             allData.push(data[keys[i]].emotions)
-                        this.setState({allData, isErrored: false},()=>{
+                        this.setState({allData, isErrored: false}, () => {
                             console.log("all Data : ", allData)
                             this.sortData(this.state.allData)
                         })
-                    }
-                )
+                })
                 .catch(error => this.setState({isErrored: true},()=>console.log(error,this.state.startDate)))
         }
     }
@@ -126,7 +124,6 @@ class Chart extends Component {
         let point = 0;
         let data = [[],[],[],[],[]];
         if(this.state.isLoaded) {
-
             console.log("emotioncount : ", emotionCount)
             data = [
                 [emotionCount[0][0], emotionCount[0][1]],
@@ -135,7 +132,6 @@ class Chart extends Component {
                 [emotionCount[3][0], emotionCount[3][1]],
                 [emotionCount[4][0], emotionCount[4][1]],
             ];
-
             point = 100 / (emotionScore[0][1] + emotionScore[1][1] + emotionScore[2][1] + emotionScore[3][1] +
                 emotionScore[4][1] + emotionScore[5][1] + emotionScore[6][1] + emotionScore[7][1]);
         }
@@ -238,7 +234,6 @@ class EmotionBox extends Component {
         super(props);
     }
     render(){
-
         const view = (
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <View style={{width: 10, height: 10, backgroundColor: this.props.color, marginHorizontal: 5}}/>

@@ -104,7 +104,7 @@ class Record extends Component{
 
                     <Button
                         title="다음"
-                        onClick={() => this.show_modal()}
+                        onClick={() => {if(this.state.selectedEmotions.length) this.show_modal()}}
                     />
 
                 </Animated.View>
@@ -157,18 +157,20 @@ class Record extends Component{
     }
 
     send_data(letter){
-        this.setState({comment:letter,modalVisible:false,},()=> {
-                let uid = API.getUid();
-                let ref = `users/${uid}/history/${Date.now()}`;
-                let data = {
-                    emotions : this.state.selectedEmotions,
-                    comment : this.state.comment
+        if(this.state.selectedEmotions.length) {
+            this.setState({comment: letter, modalVisible: false,}, () => {
+                    let uid = API.getUid();
+                    let ref = `users/${uid}/history/${Date.now()}`;
+                    let data = {
+                        emotions: this.state.selectedEmotions,
+                        comment: this.state.comment
+                    }
+                    API.writeData(ref, data)
+                        .then(this.resetState())
+                        .catch((err) => Alert.alert("에러발생", err.message))
                 }
-                API.writeData(ref,data)
-                    .then( this.resetState() )
-                    .catch( (err) => Alert.alert("에러발생",err.message))
-            }
-        )
+            )
+        }
     }
 
     show_button(){

@@ -130,7 +130,8 @@ class History extends Component {
     }
 
     show_modal(key){
-        this.setState({selectedData:key,modalVisible:true},()=>Vibration.vibrate([0,80]))
+        Vibration.vibrate([0,20,0])
+        this.setState({selectedData:key,modalVisible:true},)
     }
 
     close_modal(){

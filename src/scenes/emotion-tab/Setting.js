@@ -57,8 +57,8 @@ class Setting extends Component{
             AsyncStorage.getItem('@Setting:alarm'),
             AsyncStorage.getItem('@Setting:contacts')
         ]).then( (data)=>{ // @data = [@Session:userConfig,@Session:authType,@Setting:alarm]
-            if(data[2]) this.setState({alarm:JSON.parse(data[2])})
-            if(data[3]) this.setState({syncedContact:JSON.parse(data[3])})
+                if(data[2]) this.setState({alarm:JSON.parse(data[2])})
+                if(data[3]) this.setState({syncedContact:JSON.parse(data[3])})
                 this.setState({userConfig : JSON.parse(data[0]), authType:data[1], showSpinner:false})
             }
         )
