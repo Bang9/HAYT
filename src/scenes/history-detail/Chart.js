@@ -46,7 +46,7 @@ class Chart extends Component {
     }
 
     componentWillMount(){
-        this.dateSetting(this.beforeWeekDate,moment(0,"HH"))
+        this.dateSetting(this.beforeWeekDate,moment('23:59:59','HH:mm:ss'))
     }
 
     sortData(allData){
