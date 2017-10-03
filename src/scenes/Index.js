@@ -108,6 +108,7 @@ class App extends Component {
                         hideNavBar={true}
                         sceneStyle ={{marginTop:0}}
                         initial={!this.state.authState}
+                        panHandlers={null} // this prop handling gesture
                     />
                     <Scene
                         key="signup"

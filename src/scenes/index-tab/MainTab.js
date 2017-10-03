@@ -117,12 +117,13 @@ class MainTab extends Component{
 
                 {/*  icon reference - http://ionicframework.com/docs/ionicons  */}
                 <ActionButton buttonColor="#FF8A8A" verticalOrientation="down" position="right" autoInactive={false}>
-                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지" onPress={()=>this.show_modal()}>
+
+                    <ActionButton.Item  buttonColor='#CC92FF' title="쪽지" onPress={()=>{!__DEV__?alert('준비중입니다!'):this.show_modal()}}>
                         <Image
                             style={styles.actionButtonIcon}
                             source={require('../../img/fab_message.png')}/>
                     </ActionButton.Item>
-                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터" onPress={() => console.log("notes tapped!")}>
+                    <ActionButton.Item buttonColor='#93CEF9' title="캐릭터" onPress={() =>{!__DEV__?alert('준비중입니다!'):console.log("notes tapped!")}}>
                         <Image
                             style={styles.actionButtonIcon}
                             source={require('../../img/fab_avatar.png')}/>
