@@ -1,19 +1,21 @@
 import React, {Component} from "react";
-import {Alert, BackHandler, Image, Platform, StatusBar, StyleSheet,
-    TouchableOpacity, AsyncStorage ,View, Text, AppState} from "react-native";
+// noinspection JSUnresolvedVariable
+import {Alert, BackHandler, StatusBar, Image, Platform, StyleSheet,
+    TouchableOpacity, View ,AsyncStorage, Text, AppState} from 'react-native';
 
 //modules
-import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
+import {Actions, Reducer, Scene, Router} from 'react-native-router-flux';
 import SplashScreen from 'react-native-splash-screen'
 
 //scenes
-import Login from "./index-login/Login";
-import SignUp from "./index-login/SignUp"
-import Chart from "./history-detail/Chart"
-import Main from "./main-tab/Main";
-import FriendsList from "./main-tab/FriendsList"
-import FriendsVisit from "./main-tab/FriendsVisit"
-import StorageControl from "./setting-detail/StorageControl";
+import Login from './index-login/Login';
+import SignUp from './index-login/SignUp'
+import Chart from './history-detail/Chart'
+import Analyze from './history-detail/Analyze'
+import Main from './main-tab/Main';
+import FriendsList from './main-tab/FriendsList'
+import FriendsVisit from './main-tab/FriendsVisit'
+import StorageControl from './setting-detail/StorageControl';
 
 //services
 import API from "../services/API"
@@ -21,7 +23,7 @@ import PushAPI from '../services/PushAPI'
 
 //global states
 global.mainColor='#ff8888'
-global.backgroundColor="#ffb56d10"
+global.backgroundColor='#ffb56d10'
 global.userConfig = {
     uid:null,
     pushToken:null,
@@ -149,6 +151,12 @@ class App extends Component {
                     <Scene
                         key="chart"
                         component={Chart}
+                        hideNavBar={true}
+                        sceneStyle ={{marginTop:0}}
+                    />
+                    <Scene
+                        key="analyze"
+                        component={Analyze}
                         hideNavBar={true}
                         sceneStyle ={{marginTop:0}}
                     />

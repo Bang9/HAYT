@@ -122,7 +122,7 @@ class History extends Component {
                     icon={<Icon name="md-stats" style={{fontSize:30,color:'#fff'}}/>}
                     buttonColor="#64B5F6"
                     degrees={0}
-                    onPress={()=>Actions.chart()}
+                    onPress={()=>Actions.analyze()}
                 />
 
             </View>

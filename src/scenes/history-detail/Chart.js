@@ -13,6 +13,7 @@ import firebase from'../../commons/Firebase'
 import Button from "../../components/Button";
 
 
+
 class Chart extends Component {
 
     constructor(props){
@@ -164,23 +165,23 @@ class Chart extends Component {
                                             point * emotionScore[6][1],
                                             point * emotionScore[7][1],
                                         ]}
-                                        colors={['#3498DB', '#F1C40F', "#336E7B", '#E74C3C', '#1ABC9C', "#5696D4", "#A260AA", "#D1D5D8"]}/>
+                                        colors={['#fb7671', '#6fd956', "#9c9cd7", '#02cee5', '#08e4fe', "#238b8e", "#fab756", "#D1D5D8"]}/>
 
                                     <View style={{flexDirection:'row',marginTop:10}}>
                                         <View style={{marginHorizontal:5}}>
-                                            <EmotionBox color='#3498DB' emotionScore={emotionScore[0]}/>
-                                            <EmotionBox color='#F1C40F' emotionScore={emotionScore[1]}/>
+                                            <EmotionBox color='#fb7671' emotionScore={emotionScore[0]}/>
+                                            <EmotionBox color='#6fd956' emotionScore={emotionScore[1]}/>
                                         </View>
                                         <View style={{marginHorizontal:5}}>
-                                            <EmotionBox color='#336E7B' emotionScore={emotionScore[2]}/>
-                                            <EmotionBox color='#E74C3C' emotionScore={emotionScore[3]}/>
+                                            <EmotionBox color='#9c9cd7' emotionScore={emotionScore[2]}/>
+                                            <EmotionBox color='#02cee5' emotionScore={emotionScore[3]}/>
                                         </View>
                                         <View style={{marginHorizontal:5}}>
-                                            <EmotionBox color='#1ABC9C' emotionScore={emotionScore[4]}/>
-                                            <EmotionBox color='#5696D4' emotionScore={emotionScore[5]}/>
+                                            <EmotionBox color='#08e4fe' emotionScore={emotionScore[4]}/>
+                                            <EmotionBox color='#238b8e' emotionScore={emotionScore[5]}/>
                                         </View>
                                         <View style={{marginHorizontal:5}}>
-                                            <EmotionBox color='#A260AA' emotionScore={emotionScore[6]}/>
+                                            <EmotionBox color='#fab756' emotionScore={emotionScore[6]}/>
                                             <EmotionBox color='#D1D5D8' emotionScore={emotionScore[7]}/>
                                         </View>
                                     </View>
