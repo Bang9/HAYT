@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 // noinspection JSUnresolvedVariable
 import {Alert, BackHandler, StatusBar, Image, Platform, StyleSheet,
-    TouchableOpacity, View ,AsyncStorage, Text, AppState} from 'react-native';
+    TouchableOpacity, View ,AsyncStorage, Text, AppState,ToastAndroid} from 'react-native';
 
 //modules
 import {Actions, Reducer, Scene, Router} from 'react-native-router-flux';
@@ -10,7 +10,6 @@ import SplashScreen from 'react-native-splash-screen'
 //scenes
 import Login from './index-login/Login';
 import SignUp from './index-login/SignUp'
-import Chart from './history-detail/Chart'
 import Analyze from './history-detail/Analyze'
 import Main from './main-tab/Main';
 import FriendsList from './main-tab/FriendsList'
@@ -49,6 +48,7 @@ class App extends Component {
         this.state={
             onLoading : true,
             authState : false,
+            backPressedTime : 0,
         }
     }
 
@@ -149,12 +149,6 @@ class App extends Component {
 
                     {/*History*/}
                     <Scene
-                        key="chart"
-                        component={Chart}
-                        hideNavBar={true}
-                        sceneStyle ={{marginTop:0}}
-                    />
-                    <Scene
                         key="analyze"
                         component={Analyze}
                         hideNavBar={true}
@@ -181,8 +175,8 @@ class App extends Component {
                 onPress={()=>Actions.pop()}
                 style={{}}>
                 <Image
-                    style={{width:25,height:25,}}
-                    source={require('../img/icon_back.png')}
+                    style={{width:25,height:25,tintColor:'#fff'}}
+                    source={require('../img/icon_back2.png')}
                     resizeMode={Image.resizeMode.contain}
                 />
             </TouchableOpacity>
@@ -191,20 +185,13 @@ class App extends Component {
     onBackHandler() {
         console.log('BackHandler:this.sceneKey:' + this.sceneKey);
         if (this.sceneKey === "main" || this.sceneKey === "login") {
-            Alert.alert(
-                '알림',
-                '앱을 종료하시겠습니까?', [
-                    {
-                        text: '네',
-                        onPress: () => BackHandler.exitApp()
-                    },
-                    {
-                        text: '아니요'
-                    }
-                ]
-
-            );
-            return true; //remain in app
+            if(Date.now() > this.state.backPressedTime+2000){
+                this.setState({backPressedTime:Date.now()})
+                ToastAndroid.show('뒤로 버튼을 한번 더 누르면 종료됩니다.', ToastAndroid.SHORT);
+                return true; //remain in app
+            }else{
+                return BackHandler.exitApp();
+            }
         } else {
             try {
                 Actions.pop();

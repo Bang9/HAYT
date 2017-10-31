@@ -1,44 +1,17 @@
-import React, {Component} from "react";
-import { AppRegistry, StyleSheet, ScrollView , StatusBar, Text, View,Dimensions } from 'react-native';
-
-import DateModal from '../../components/DateModal'
 import moment from 'moment';
+import React, { Component } from "react";
+import { AppRegistry, Dimensions, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
-
-const {width,height} = Dimensions.get('window')
-import API from '../../services/API'
-import firebase from'../../commons/Firebase'
+import firebase from '../../commons/Firebase'
 import Button from "../../components/Button";
 
+import DateModal from '../../components/DateModal'
 // Charts
 import AreaSpline from '../../components/graph/charts/AreaSpline';
 import Pie from '../../components/graph/charts/Pie';
 import Theme from '../../components/graph/theme';
 
-const firstData = {
-    spendingsPerYear: [
-        {date: moment('2017-10-01'), value: 0},
-        {date: moment('2017-10-02'), value: 0},
-        {date: moment('2017-10-03'), value: 0},
-        {date: moment('2017-10-04'), value: 80},
-        {date: moment('2017-10-05'), value: 60},
-        {date: moment('2017-10-06'), value: 40},
-        {date: moment('2017-10-07'), value: 20},
-        {date: moment('2017-10-08'), value: 0},
-        {date: moment('2017-10-09'), value: 0},
-        {date: moment('2017-10-10'), value: 0},
-        {date: moment('2017-10-11'), value: 40},
-        {date: moment('2017-10-12'), value: 20},
-        {date: moment('2017-10-13'), value: 0},
-        {date: moment('2017-10-14'), value: 0},
-        {date: moment('2017-10-15'), value: 20},
-        {date: moment('2017-10-16'), value: 40},
-        {date: moment('2017-10-17'), value: 80},
-        {date: moment('2017-10-18'), value: 40},
-        {date: moment('2017-10-19'), value: 20},
-        {date: moment('2017-10-20'), value: 0},
-    ],
-}
+const {width,height} = Dimensions.get('window')
 
 const emotions = [
     '행복','설렘','즐거움','소소','평온',
@@ -65,12 +38,10 @@ class Analyze extends Component {
             isErrored:false,
 
             pieData:[{emotion:'loading',value:0}],
+            splineData:{"emotion":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]},
             activeIndex:0,
-            spendingsPerYear: firstData.spendingsPerYear,
         }
-
         this.uid = firebase.auth().currentUser.uid;
-        this.ref = `users/${this.uid}/history`;
     }
 
     componentWillMount(){
@@ -110,11 +81,11 @@ class Analyze extends Component {
                             isLoaded:true,
                             isErrored:false,
                             pieData:this.getPieData(data),
-                            splineData:this.getSplineData(data)
+                            splineData:this.getSplineData()
                         })
                     }
                 })
-                .catch(error => this.setState({isErrored: true}))
+                .catch(error => this.setState({isErrored: true, isLoaded:false},()=>console.log(error)))
         }
     }
 
@@ -140,12 +111,44 @@ class Analyze extends Component {
             return b.value - a.value;
         })
         console.log('getPieData',pieData.slice(0,8))
-        console.log(this.state.endDate.isSame(this.state.startDate,'month'))
         return pieData.slice(0,8);
     }
 
-    getSplineData(data){
+    async getSplineData(){
+        let startUnix= this.state.startDate.valueOf();
+        let endUnix = this.state.endDate.valueOf();
+        let term = (endUnix-startUnix)/20;
 
+        let splineData = {};
+        emotions.some(emotion =>{ splineData[emotion]=[]; });
+        for(emotion in splineData){
+            splineData[emotion] = Array.apply(null, new Array(20)).map(Number.prototype.valueOf,0);
+        }
+
+        for(var i=0; i<20; i++) {
+            let start = startUnix+(i*term);
+            let end = startUnix+((i+1)*term);
+            let snapshot = await firebase.database().ref(`users/${this.uid}/history`)
+                .orderByKey().startAt(`${start}`).endAt(`${end}`).once();
+
+            //해당 splineData[index]=0으로 초기화 하고, data 있으면 해당 splineData[index]값 바꿔줌
+            let data = snapshot.val();
+            if(data){
+                console.log('this time data:', data)
+                for(index in data){
+                    emotionByTerm = data[index].emotions;
+                    emotionByTerm.some((curr)=>{
+                        if(i-2>=0) splineData[curr.emotion][i-2] += curr.value*2.5;
+                        if(i-1>=0) splineData[curr.emotion][i-1] += curr.value*7.5;
+                        splineData[curr.emotion][i] += curr.value*15;
+                        if(i+1<20) splineData[curr.emotion][i+1] += curr.value*10;
+                        if(i+2<20) splineData[curr.emotion][i+2] += curr.value*7.5;
+                    })
+                }
+            }
+        }
+        console.log(splineData);
+        return splineData;
     }
 
     show_modal(){
@@ -156,14 +159,7 @@ class Analyze extends Component {
     }
 
     _onPieItemSelected(newIndex){
-        this.setState({activeIndex: newIndex, spendingsPerYear: this._shuffle(firstData.spendingsPerYear) });
-    }
-    _shuffle(a) {
-        for (let i = a.length; i; i--) {
-            let j = Math.floor(Math.random() * i);
-            [a[i - 1], a[j]] = [a[j], a[i - 1]];
-        }
-        return a;
+        this.setState({activeIndex: newIndex});
     }
 
     render() {
@@ -175,7 +171,7 @@ class Analyze extends Component {
                             <View style={{width:width*.5,height:30,justifyContent:'center',alignItems:'center',marginVertical:20,borderRadius:20,alignSelf:'center',backgroundColor:'#cfcfcf'}}>
                                 <Text style={{fontSize:14,fontWeight:'bold',color:'#fff'}}>
                                     {this.state.startDate.format("YYYY/MM/DD")} - {this.state.endDate.format("MM/DD")}
-                                    </Text>
+                                </Text>
                             </View>
                             <Pie
                                 pieWidth={150}
@@ -190,7 +186,9 @@ class Analyze extends Component {
                                 title={this.state.pieData[this.state.activeIndex].emotion}
                                 width={width}
                                 height={150}
-                                data={this.state.spendingsPerYear}
+                                data={this.state.splineData}
+                                startDate={this.state.startDate}
+                                endDate={this.state.endDate}
                                 color={Theme.colors[this.state.activeIndex]} />
                         </ScrollView>
                         :

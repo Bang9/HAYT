@@ -1,24 +1,28 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import {
     Alert,
     AsyncStorage,
     Dimensions,
     Image,
+    PermissionsAndroid,
+    Platform,
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TimePickerAndroid,
     ToastAndroid,
     TouchableOpacity,
     View,
-    Platform,
-    PermissionsAndroid
+    TouchableNativeFeedback
 } from "react-native";
-import API from "../../services/API";
-import PushAPI from "../../services/PushAPI";
-import {Actions} from "react-native-router-flux";
 import Contacts from 'react-native-contacts';
 import Spinner from "react-native-loading-spinner-overlay";
+import Modal from 'react-native-modal';
+import { Actions } from "react-native-router-flux";
+import API from "../../services/API";
+import PushAPI from "../../services/PushAPI";
+
 const {width,height} = Dimensions.get('window');
 
 class Setting extends Component{
@@ -43,6 +47,8 @@ class Setting extends Component{
             },
             showSpinner: true,
             dev:0,
+            modalPhone:'',
+            modalVisible:false,
         }
     }
     componentWillMount(){
@@ -163,89 +169,111 @@ class Setting extends Component{
             return -1;
     }
 
-    removeContact(){
-        Alert.alert(
-            '알림',
-            '연락처 연동을 해제하시겠어요?', [
-                {
-                    text: '네',
-                    onPress: () => {
-                        AsyncStorage.removeItem('@Setting:contacts')
-                        this.setState({syncedContact:{contacts:[],isSet:false}}, ()=>{
-                            ToastAndroid.show('연동이 해제되었습니다.', ToastAndroid.SHORT)
-                        })
+    confirmContact(){
+        !this.state.syncedContact.isSet ?
+            Alert.alert(
+                '알림',
+                '연락처를 연동하시겠어요?', [
+                    {
+                        text: '네',
+                        onPress: () => {
+                            this.setState({showSpinner: true});
+                            this.checkContactPermission(
+                                (ret, e) => {
+                                    if (ret) {
+                                        Contacts.getAll((err, contacts) => {
+                                            console.log("Contact.getAll");
+                                            let userPhone = contacts[0].phoneNumbers[0].number.replace(/-/gi, '');
+                                            this.setState({modalPhone: userPhone, modalVisible: true});
+                                        })
+                                    }
+                                })
+                        }
+                    },
+                    {
+                        text: '아니요'
                     }
-                },
-                {
-                    text: '아니요'
-                }
-            ])
+                ]
+            )
+            :
+            Alert.alert(
+                '알림',
+                '연락처 연동을 해제하시겠어요?', [
+                    {
+                        text: '네',
+                        onPress: () => {
+                            AsyncStorage.removeItem('@Setting:contacts')
+                            this.setState({syncedContact:{contacts:[],isSet:false}}, ()=>{
+                                ToastAndroid.show('연동이 해제되었습니다.', ToastAndroid.SHORT)
+                            })
+                        }
+                    },
+                    {
+                        text: '아니요'
+                    }
+                ])
     }
 
     setContact(){
-        Alert.alert(
-            '알림',
-            '연락처를 연동하시겠어요?', [
-                {
-                    text: '네',
-                    onPress: () => {
-                        this.setState({showSpinner:true});
-                        this.checkContactPermission(
-                            (ret, e)=>{
-                                if(ret){
-                                    Contacts.getAll((err, contacts) => {
-                                        console.log("Contact.getAll");
-                                        let simpleContacts = [] // arr = [ {name:xxx, phone:xx}... ]
+        this.setState({showSpinner:true});
+        this.checkContactPermission(
+            (ret, e)=>{
+                if(ret){
+                    Contacts.getAll((err, contacts) => {
+                        console.log("Contact.getAll");
+                        let simpleContacts = [] // arr = [ {name:xxx, phone:xx}... ]
 
-                                        contacts.some((obj,index) => {
-                                            if(obj.phoneNumbers[0]!=null) {
-                                                let name = '';
-                                                if(obj.familyName) name += obj.familyName;
-                                                if(obj.givenName) name += obj.givenName;
-                                                let phone = obj.phoneNumbers[0].number.replace(/-/gi,''); //remove slash
-                                                simpleContacts.push({
-                                                    name : name,
-                                                    phone : phone
-                                                })
-                                            }
-                                        });
-
-                                        const userPhone = simpleContacts[0];
-                                        simpleContacts.splice(0,1)
-                                        simpleContacts.sort( (a,b)=>{
-                                            if( this.setPriority(a) > this.setPriority(b) ) return -1;
-                                            if( this.setPriority(a) < this.setPriority(b) ) return 1;
-                                            return a.name < b.name ? -1 : a.name > b.name ? 1 : 0
-                                        })
-
-                                        let uid = API.getUid();
-                                        let phoneRef = `users/${uid}/userConfig/phone`;
-                                        let usersRef = `userLookUpByPhone/${userPhone.phone}`
-
-                                        API.writeData(phoneRef, userPhone.phone);
-                                        API.writeData(usersRef, uid);
-                                        this.setFriendsByPhone(simpleContacts);
-                                        let contactSetting = {contacts:simpleContacts, isSet:true}
-                                        AsyncStorage.setItem('@Setting:contacts',JSON.stringify(contactSetting))
-
-                                        this.setState({syncedContact:contactSetting,showSpinner:false},()=>
-                                            ToastAndroid.show('연락처가 연동되었습니다.', ToastAndroid.SHORT)
-                                        )
-                                        console.log('success get contacts',userPhone)
-                                    })
-                                }
-                                else{
-                                    alert('권한이 설정되지 않아 주소록을 불러 올 수 없습니다:');
-                                }
+                        contacts.some((obj,index) => {
+                            if(obj.phoneNumbers[0]!=null) {
+                                let name = '';
+                                if(obj.familyName) name += obj.familyName;
+                                if(obj.givenName) name += obj.givenName;
+                                let phone = obj.phoneNumbers[0].number.replace(/-/gi,''); //remove slash
+                                simpleContacts.push({
+                                    name : name,
+                                    phone : phone
+                                })
                             }
+                        });
+                        const userPhone = this.state.modalPhone;
+
+                        simpleContacts.splice(0,1)
+                        simpleContacts.sort( (a,b)=>{
+                            if( this.setPriority(a) > this.setPriority(b) ) return -1;
+                            if( this.setPriority(a) < this.setPriority(b) ) return 1;
+                            return a.name < b.name ? -1 : a.name > b.name ? 1 : 0
+                        })
+
+                        let uid = API.getUid();
+                        let phoneRef = `users/${uid}/userConfig/phone`;
+                        let usersRef = `userLookUpByPhone/${userPhone}`
+
+                        API.writeData(phoneRef, userPhone);
+                        API.writeData(usersRef, uid);
+                        this.setFriendsByPhone(simpleContacts);
+                        let contactSetting = {contacts:simpleContacts, isSet:true}
+                        AsyncStorage.setItem('@Setting:contacts',JSON.stringify(contactSetting))
+
+                        this.setState({syncedContact:contactSetting,showSpinner:false},()=>
+                            ToastAndroid.show('연락처가 연동되었습니다.', ToastAndroid.SHORT)
                         )
-                    }
-                },
-                {
-                    text: '아니요'
+                        console.log('success get contacts',userPhone)
+                    })
                 }
-            ]
-        );
+                else{
+                    alert('권한이 설정되지 않아 주소록을 불러 올 수 없습니다:');
+                }
+            }
+        )
+    }
+
+    modalPress(ret){
+        let result = ret.state;
+        let phone = ret.phone;
+        if(result){
+            this.setState({modalPhone:phone,modalVisible:false})
+            return this.setContact();
+        }
     }
 
     async setFriendsByPhone(contacts){
@@ -305,6 +333,14 @@ class Setting extends Component{
             console.warn(err);
             onError();
         }
+    }
+
+    show_modal(){
+        this.setState({modalVisible:true})
+    }
+    close_modal(){
+        this.setState({modalVisible:false,showSpinner:false})
+        ToastAndroid.show(`연동이 취소되었습니다`, ToastAndroid.SHORT);
     }
 
     render(){
@@ -370,16 +406,7 @@ class Setting extends Component{
                     {/* Account Menu */}
                     <View style={styles.settingContainer}>
                         <Text style={styles.settingTitle}>계정</Text>
-                        <TouchableOpacity
-                            onPress={
-                                ()=> {
-                                    if(!this.state.syncedContact.isSet)
-                                        this.setContact();
-                                    else
-                                        this.removeContact();
-                                }
-                            }
-                        >
+                        <TouchableOpacity onPress={()=>this.confirmContact()}>
                             <View style={styles.settingButton}>
                                 {
                                     !this.state.syncedContact.isSet ?
@@ -428,6 +455,12 @@ class Setting extends Component{
                     <Spliter/>
                 </TouchableOpacity>
                 <Spinner visible={this.state.showSpinner}/>
+                <InputModal
+                    modalPhone = {this.state.modalPhone}
+                    modalVisible = {this.state.modalVisible}
+                    closeModal = {()=>this.close_modal()}
+                    onClick = {(ret)=>this.modalPress(ret)}
+                />
             </ScrollView>
         )
     }
@@ -491,3 +524,50 @@ const styles = StyleSheet.create({
     }
 
 })
+
+
+class InputModal extends Component{
+    constructor(props){
+        super(props)
+        this.state={
+            number:""
+        }
+    }
+    close(){
+        this.setState({modalVisible:false})
+    }
+    componentWillReceiveProps(nextProps){
+        if(this.state.number != nextProps.modalPhone){
+            this.setState({number:nextProps.modalPhone})
+        }
+    }
+    render(){
+        return(
+            <Modal
+                isVisible={this.props.modalVisible}
+                onBackButtonPress={this.props.closeModal}
+                hideOnBack={true}>
+
+                <View style ={{justifyContent:'center',alignItems:'center',backgroundColor:'#fff'}}>
+                    <Text style={{marginTop:20}}>연락처를 입력하세요</Text>
+                    <TextInput
+                        placeholder={"01012345678"}
+                        style ={{width:270,textAlign:'center',height:60,alignSelf:'center',fontSize:25}}
+                        value={this.state.number}
+                        onChangeText={(text)=>{if(text.length<=11)this.setState({number:text})}}
+                        underlineColorAndroid='#fff'
+                        keyboardType='numeric'
+                        textAlignVertical='top' />
+                    <TouchableNativeFeedback
+                        delayPressIn={0}
+                        background={TouchableNativeFeedback.SelectableBackground()}
+                        onPress={()=>{this.state.number &&this.state.number.length==11 ? this.props.onClick({state:true,phone:this.state.number}):null}}>
+                        <View style={{backgroundColor:this.state.number &&this.state.number.length==11 ? '#44aaff' : '#ccc',height:50,width:500,alignItems:'center',justifyContent:'center'}}>
+                            <Text style={{fontSize:16,color:'#fff'}}>확 인</Text>
+                        </View>
+                    </TouchableNativeFeedback>
+                </View>
+            </Modal>
+        )
+    }
+}

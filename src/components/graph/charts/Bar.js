@@ -1,16 +1,12 @@
 // @flow
 'use strict';
 
+import * as scale from 'd3-scale';
+import * as shape from 'd3-shape';
 import React from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    ART,
-    LayoutAnimation,
-    Dimensions,
-    TouchableWithoutFeedback,
-} from 'react-native';
+import { ART, Dimensions, LayoutAnimation, StyleSheet, Text, TouchableWithoutFeedback, View, } from 'react-native';
+import AnimShape from '../art/AnimShape';
+import Theme from '../theme';
 
 const {
           Surface,
@@ -19,20 +15,10 @@ const {
           Shape,
       } = ART;
 
-import * as scale from 'd3-scale';
-import * as shape from 'd3-shape';
-import AnimShape from '../art/AnimShape';
-import Theme from '../theme';
-
 const d3 = {
     scale,
     shape,
 };
-
-import {
-    scaleBand,
-    scaleLinear
-} from 'd3-scale';
 
 type Props = {
     height: number,

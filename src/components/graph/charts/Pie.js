@@ -1,72 +1,32 @@
 // @flow
 'use strict';
 
+import * as scale from 'd3-scale';
+import * as shape from 'd3-shape';
 import React from 'react';
-import {
-    StyleSheet,
-    Text,
-    View,
-    ART,
-    LayoutAnimation,
-    Dimensions,
-    TouchableWithoutFeedback,
-} from 'react-native';
+import { ART, Dimensions, LayoutAnimation, StyleSheet, Text, TouchableWithoutFeedback, View, } from 'react-native';
+import AnimShape from '../art/AnimShape';
+import Theme from '../theme';
 
 const {
           Surface,
           Group,
-          Rectangle,
-          Shape,
       } = ART;
-
-import * as scale from 'd3-scale';
-import * as shape from 'd3-shape';
-import AnimShape from '../art/AnimShape';
-import Theme from '../theme';
 
 const d3 = {
     scale,
     shape,
 };
-
-import {
-    scaleBand,
-    scaleLinear
-} from 'd3-scale';
-
-type Props = {
-    height: number,
-    width: number,
-    pieWidth: number,
-    pieHeight: number,
-    colors: any,
-    onItemSelected: any
-};
-
-type State = {
-    highlightedIndex: number,
-};
-
 class Pie extends React.Component {
-
-    state: State;
-
-    constructor(props: Props) {
+    constructor(props) {
         super(props);
         this.state = { highlightedIndex: 0 };
-        this._createPieChart = this._createPieChart.bind(this);
-        this._value = this._value.bind(this);
-        this._label = this._label.bind(this);
-        this._color = this._color.bind(this);
-        this._onPieItemSelected = this._onPieItemSelected.bind(this);
     }
 
     // methods used to tranform data into piechart:
     // TODO: Expose them as part of the interface
     _value(item) { return item.value; }
-
     _label(item) { return item.emotion; }
-
     _color(index) { return Theme.colors[index]; }
 
     _createPieChart(index) {

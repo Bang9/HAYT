@@ -1,34 +1,19 @@
 // @flow
 'use strict';
 
-import React from 'react';
-import {
-  ART,
-  LayoutAnimation,
-} from 'react-native';
+import Morph from 'art/morph/path';
+import React,{Component} from 'react';
+import { ART, LayoutAnimation, } from 'react-native';
 
 const {
   Shape,
 } = ART;
 
-import Morph from 'art/morph/path';
-
-import * as shape from 'd3-shape';
-
-const d3 = {
-  shape,
-};
-
-type Props = {
-  color: any,
-  d: () => any,
-};
-
 const AnimationDurationMs = 250;
 
-export default class AnimShape extends React.Component {
+export default class AnimShape extends Component {
 
-  constructor(props: Props) {
+  constructor(props) {
     super(props);
     this.state = {
       path: '',

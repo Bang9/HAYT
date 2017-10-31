@@ -62,7 +62,7 @@ class FriendsList extends Component {
         let ref = `users/${uid}/friends`;
 
         API.getDataOn(ref,(snapshot)=>{
-            if(snapshot) {
+            if(snapshot.val()) {
                 this.setState({friends: snapshot.val(), showSpinner: false});
                 let friends = [];
                 snapshot.val().some((friend) => {
@@ -75,6 +75,8 @@ class FriendsList extends Component {
                         })
                 })
                 this.friends = friends;
+            }else{
+                this.setState({friends:null,showSpinner:false})
             }
         });
     }
