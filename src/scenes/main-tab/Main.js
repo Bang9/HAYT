@@ -3,16 +3,22 @@ import {View,Text,Dimensions,TouchableOpacity,Image} from "react-native";
 
 import {Actions} from "react-native-router-flux";
 import ScrollableTabView from "react-native-scrollable-tab-view";
-import ImageTabBar from "../../components/ImageTabBar";
+import DefaultTabBar from "../../components/DefaultTabBar";
 import MainTab from "../index-tab/MainTab";
 import EmotionTab from "../index-tab/EmotionTab";
 import styles from "../../commons/mainStyle";
-const {width,height} = Dimensions.get('window')
+import TabBar from 'react-native-underline-tabbar'
+const {width,height} = Dimensions.get('window');
+
+import History from '../emotion-tab/History'
+import Record from '../emotion-tab/Record'
+import Setting from '../emotion-tab/Setting'
 
 class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedTab:'main',
         };
     }
     componentWillMount(){
@@ -21,24 +27,32 @@ class Main extends Component {
     componentDidMount(){
     }
 
+    tabBar(){
+        return(
+            <TabBar
+                tabBarStyle={{justifyContent:'center',backgroundColor:'green'}}
+                tabMargin={0}
+                tabStyles={{tab:{width:width*.333}}}
+                underlineColor="#f88"  />
+        )
+    }
     render(){
         return(
-            <View style={{flexDirection: "column", flex:1,}}>
+            <View style={{flexDirection: "column", flex:1}}>
                 <ScrollableTabView
-                    //style={{flexDirection: "column"}}
                     locked={false}
                     tabBarPosition="bottom"
-                    renderTabBar={() =><View/>}
-                    tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
-                    tabBarActiveTextColor={global.mainColor}
-                    tabBarInactiveTextColor='#bdbdbd'
-                    initialPage={0}
+                    renderTabBar={() =><DefaultTabBar tabsContainerStyle={{borderTopWidth:1}} backgroundColor='#fff' tabStyle={{width:width*.333}} textStyle={{fontSize:10}}/>}
+                    tabBarActiveTextColor="#f88"
+                    tabBarInactiveTextColor='#ccc'
+                    initialPage={1}
                     ref={(tabView)=>this.tabView = tabView}>
 
-                    <MainTab tabLabel="메인" parent={this}/>
-                    <EmotionTab tabLabel="기록"/>
+                    <History tabLabel={"히스토리"}></History>
+                    <MainTab tabLabel={"메인"} parent={this}/>
+                    <Setting tabLabel={"설정"}></Setting>
+                    {/*<EmotionTab tabLabel="기록"/>*/}
                 </ScrollableTabView>
-
             </View>
         )
     }

@@ -10,6 +10,7 @@ import {
 
 import ScrollableTabView from "react-native-scrollable-tab-view";
 import ImageTabBar from "../../components/ImageTabBar";
+import DefaultTabBar from '../../components/DefaultTabBar';
 import styles from "../../commons/mainStyle";
 const {width,height} = Dimensions.get('window')
 
@@ -30,9 +31,9 @@ class EmotionTab extends Component{
                     <ScrollableTabView
                         locked={false}
                         tabBarPosition="top"
-                        renderTabBar={() => <ImageTabBar tabStyle={{width:width*.3}} badgeNum={0} textStyle={{fontSize:12}}/>}
+                        renderTabBar={() => <DefaultTabBar />}//<ImageTabBar tabStyle={{width:width*.3}} badgeNum={0} textStyle={{fontSize:12}}/>}
                         tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
-                        tabBarActiveTextColor={'#ff8888'}
+                        tabBarActiveTextColor='#ff8888'
                         tabBarInactiveTextColor='#bdbdbd'
                         initialPage={0}>
 

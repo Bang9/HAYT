@@ -2,13 +2,13 @@ import React, {Component} from "react";
 import {Dimensions, Text, View,FlatList, TouchableOpacity, TouchableNativeFeedback,
     ListView, StyleSheet, Animated,Image,ScrollView, Vibration, ToastAndroid, ProgressBar, ActivityIndicator} from 'react-native';
 import API from "../../services/API"
-const {width,height} = Dimensions.get('window');
 import EmotionBar from "../../components/EmotionBar";
 import PressModal from '../../components/PressModal'
 import Button from '../../components/Button'
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Actions, Reducer, Router, Scene} from "react-native-router-flux";
+const {width,height} = Dimensions.get('window');
 const timeConverter = (timeStamp)=>{
     let a = new Date(parseInt(timeStamp));
 
